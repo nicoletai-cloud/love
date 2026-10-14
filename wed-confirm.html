@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>行前確認｜好好禮車</title>
+<meta name="robots" content="noindex">
+<meta property="og:title" content="婚禮用車・行前確認｜好好禮車">
+<meta property="og:description" content="用車前最後確認地址與時間，讓司機好好掌握當天行程。">
+<style>
+:root{--bg:#f8f5f0;--surface:#fff;--fg:#2f2a24;--muted:#7a7066;--line:#e4dbce;--accent:#8a6d43;--accent-ink:#fff;--soft:#f3ece2;--warn:#b4532a;--warn-soft:#fbeee6;--ok:#2f7d4f;--ok-soft:#e8f4ec}
+@media (prefers-color-scheme:dark){:root{--bg:#1d1a17;--surface:#26221e;--fg:#f1ebe3;--muted:#b3a899;--line:#3b352e;--accent:#c9a46b;--accent-ink:#1d1a17;--soft:#2e2924;--warn:#f0a07a;--warn-soft:#3a2a22;--ok:#7fc79a;--ok-soft:#1f3328}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.6 -apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif}
+.wrap{max-width:560px;margin:0 auto;padding:22px 16px calc(36px + env(safe-area-inset-bottom))}
+.brand{color:var(--accent);font-weight:700;letter-spacing:.08em;font-size:14px}
+h1{font-size:24px;margin:4px 0 8px}
+.lead{color:var(--muted);font-size:15px;margin:0 0 6px;white-space:pre-line}
+.sec{margin:26px 0 10px;padding-top:18px;border-top:1px solid var(--line)}
+.sec h2{font-size:19px;margin:0}
+.sec h2 i{font-style:normal;color:var(--accent);margin-right:8px;font-size:15px}
+.sec p{color:var(--muted);font-size:14px;margin:4px 0 0;white-space:pre-line}
+.field{display:grid;gap:6px;margin:16px 0}
+label.q{font-weight:600}
+label.q b{color:var(--warn);font-weight:700;margin-left:2px}
+label.q small{font-weight:400;color:var(--muted);margin-left:6px}
+.help{font-size:14px;color:var(--muted);margin:-2px 0 2px;white-space:pre-line}
+.help a{color:var(--accent)}
+input,textarea{font:inherit;font-size:17px;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:11px 13px;min-height:48px;width:100%}
+textarea{min-height:90px;resize:vertical}
+input:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+input[readonly]{background:transparent;color:var(--muted)}
+.bad{border-color:var(--warn)!important;background:var(--warn-soft)!important}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:inherit;font-size:15px;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:7px 15px;min-height:40px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.chip:disabled{opacity:.45;cursor:default}
+.sub{margin-top:8px}
+.decobox{margin-top:10px;display:grid;gap:10px}
+.dgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(min-width:560px){.dgrid{grid-template-columns:repeat(3,1fr)}}
+.dcard{font:inherit;text-align:left;padding:0;border:2px solid var(--line);border-radius:14px;background:var(--surface);overflow:hidden;cursor:pointer;color:var(--fg);display:flex;flex-direction:column}
+.dcard img{width:100%;aspect-ratio:516/459;object-fit:cover;display:block;background:#eee}
+.dcard .dn{padding:8px 10px 2px;font-size:14px;font-weight:600;line-height:1.35}
+.dcard .dp{padding:0 10px 9px;font-size:14px;color:var(--muted)}
+.dcard[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
+.dcard[aria-pressed="true"] .dp{color:var(--accent);font-weight:700}
+.signchk{display:flex;align-items:center;gap:8px;font-size:15.5px;cursor:pointer;margin-top:4px}
+.signchk input{width:20px;height:20px;min-height:0;margin:0;padding:0;border:0;box-shadow:none;accent-color:var(--accent)}
+#signBox{display:grid;gap:8px}
+.signimg{width:100%;max-width:420px;border-radius:12px}
+.decosum{font-size:15.5px;font-weight:600}
+.decosum:empty{display:none}
+.pk{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-size:14px;font-weight:700;margin-right:8px;vertical-align:1px}
+.rchip{display:inline-flex;align-items:center;gap:6px}.rchip b{font-size:17px}.rchip small{font-size:13px;opacity:.75}
+.qrow{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.same{display:inline-flex;align-items:center;gap:6px;font-size:15px;color:var(--fg);cursor:pointer}
+.same input{width:18px;height:18px;min-height:0;margin:0;padding:0;border:0;box-shadow:none;outline-offset:2px;accent-color:var(--accent)}
+.stop{border:1px solid var(--line);border-radius:14px;padding:12px 14px;background:var(--surface)}
+.stop .rm{font:inherit;font-size:14px;background:none;border:0;color:#b4532a;cursor:pointer;padding:4px 6px}
+.addstop{font:inherit;font-size:15px;width:100%;min-height:46px;border:1.5px dashed var(--line);border-radius:14px;background:transparent;color:var(--fg);cursor:pointer}
+.addstop:disabled{opacity:.45;cursor:default}
+.route{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-height:52px;font-size:17px;font-weight:600;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.route .ph{color:var(--muted);font-weight:400;font-size:15px}
+.route .arrow{color:var(--accent)}
+.rtools{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.tool{font:inherit;font-size:15px;border:1px solid var(--accent);color:var(--accent);background:transparent;border-radius:10px;padding:6px 14px;min-height:40px;cursor:pointer}
+.tool:disabled{opacity:.4}
+.err{color:var(--warn);font-size:14px;min-height:0;margin:6px 0 0}
+button.go{font:inherit;font-weight:700;font-size:18px;color:var(--accent-ink);background:var(--accent);border:0;border-radius:12px;min-height:54px;width:100%;cursor:pointer;margin-top:22px}
+button.go:disabled{opacity:.6}
+.done{text-align:center;padding:48px 0}
+.done .big{font-size:54px;line-height:1}
+.done h2{margin:12px 0 8px}
+.done p{color:var(--muted);white-space:pre-line;margin:0}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.note-tip{background:var(--soft);border-left:4px solid var(--accent);border-radius:8px;padding:10px 14px;font-size:15px;margin:-4px 0 6px}
+.done2{padding:4px 0 10px}
+.d-head{border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:46px}
+.d-brand{color:var(--accent);font-weight:700;font-size:26px;letter-spacing:.04em;margin-right:16px}
+.d-en{color:var(--accent);font-size:14px;letter-spacing:.04em}
+.d-sub{color:var(--muted);font-size:17px;margin-top:8px;letter-spacing:.06em}
+.d-check{width:96px;height:96px;border-radius:50%;background:#e8ede0;color:#5e7448;display:flex;align-items:center;justify-content:center;margin:0 auto}
+.d-ok{text-align:center;color:#5e7448;font-weight:700;font-size:16px;margin-top:22px}
+.d-title{text-align:center;font-size:30px;margin:12px 0 14px;letter-spacing:.02em}
+.d-lead{text-align:center;color:var(--muted);font-size:17px;line-height:2;margin:0}
+.d-card{display:flex;gap:18px;align-items:flex-start;background:#efeae4;border-radius:18px;padding:24px 22px;margin:44px 0 0}
+.d-card .d-ic{color:var(--accent);flex:none;margin-top:2px}
+.d-card b{font-size:18px}.d-card p{margin:8px 0 0;color:var(--muted);font-size:16px;line-height:1.9}
+.d-btn{display:flex;align-items:center;justify-content:center;gap:40px;background:var(--accent);color:#fff;text-decoration:none;font-weight:700;font-size:19px;border-radius:16px;min-height:76px;margin-top:70px}
+.d-btn span{font-weight:400;font-size:24px}
+.d-foot{text-align:center;color:var(--muted);font-size:15px;margin:22px 0 0}
+@media (prefers-color-scheme:dark){.d-check{background:#2c3626;color:#a9c48d}.d-ok{color:#a9c48d}.d-card{background:var(--soft)}}
+[hidden]{display:none!important}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:14px 0 4px;font-size:15.5px}
+.card b{font-weight:700}.card .k{color:var(--muted);display:inline-block;min-width:4.5em}
+.pre{font-size:13.5px;color:var(--ok);margin-top:-2px}
+.load{color:var(--muted);text-align:center;padding:60px 0}
+.ups{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px}
+.up{position:relative;border:1px solid var(--line);border-radius:10px;overflow:hidden;aspect-ratio:1;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--muted);text-align:center;padding:4px}
+.up img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.up .x{position:absolute;top:4px;right:4px;width:26px;height:26px;border-radius:50%;border:0;background:rgba(0,0,0,.55);color:#fff;font-size:15px;line-height:26px;padding:0;cursor:pointer;z-index:1}
+.up.busy::after{content:"上傳中…";position:absolute;inset:0;background:rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center;color:#2f2a24}
+.friend{display:block;text-align:center;text-decoration:none;font-weight:700;font-size:17px;color:#fff;background:#06c755;border-radius:12px;min-height:52px;line-height:52px;margin-top:22px}
+</style>
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js" charset="utf-8"></script>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">好好禮車 NICE WEDDING CAR</div>
+  <h1>婚禮用車・行前確認</h1>
+  <div id="loading" class="load">讀取訂單資料中…</div>
+  <div id="bad" class="load" hidden></div>
+  <div id="lineGate" hidden>
+    <p class="lead">恭喜即將迎來大日子🤍</p>
+    <div class="card" style="line-height:1.7">為了整合婚禮當天的行程資訊、方便客服即時聯繫，好好禮車的行程確認與後續聯繫都<b>統一使用 LINE</b>。
+<br><br>請先用 LINE 登入，登入時可以一併加入好好禮車官方帳號（@niceweddingcar）為好友，之後有任何變動直接在 LINE 告訴我們就好。</div>
+    <button class="friend" id="lineGo" type="button" style="width:100%;border:0;cursor:pointer;font:inherit;font-weight:700">用 LINE 登入並確認行程</button>
+  </div>
+
+  <form id="f" novalidate hidden>
+    <p class="lead">恭喜即將迎來大日子🤍
+下面已先帶入你們之前填寫的資料，請再確認一次；有變動直接修改就好。</p>
+    <div class="card" id="sum"></div>
+    <div class="note-tip" id="again" hidden></div>
+    <div class="hp" aria-hidden="true"><label>請勿填寫<input id="hp" tabindex="-1" autocomplete="off"></label></div>
+
+    <div class="sec"><h2><i>01</i>當天聯絡人</h2><p>司機當天會聯絡這位，請填寫方便接電話的人。</p></div>
+    <div class="row2">
+      <div class="field"><label class="q" for="name">聯絡人姓名<b>*</b></label><input id="name" autocomplete="name" data-req></div>
+      <div class="field"><label class="q" for="phone">聯絡人電話<b>*</b></label><input id="phone" type="tel" inputmode="tel" autocomplete="tel" data-req></div>
+    </div>
+
+    <div class="sec"><h2><i>02</i>地址與時間</h2><p>地址請填完整（含門牌號碼）；飯店或場館請一併註明名稱。</p></div>
+    <div class="field"><label class="q">當天行程<b>*</b></label>
+      <div class="chips" data-pick="mode"><button type="button" class="chip">迎娶（男方家 ⇄ 女方家）</button><button type="button" class="chip">單點繞圈</button></div></div>
+    <div class="field"><label class="q" for="meet"><span class="pk">A</span>男方家地址（或集合地點）<b>*</b></label><input id="meet" data-req></div>
+    <div class="field"><label class="q">是否訂結一起<b>*</b></label><div class="help">訂婚（文定）和結婚（迎娶）在同一天。</div>
+      <div class="chips" data-pick="combo"><button type="button" class="chip">是</button><button type="button" class="chip">否</button></div></div>
+    <div id="wedBox">
+    <div class="field"><label class="q" for="wed"><span class="pk">B</span>女方家地址<b>*</b></label><input id="wed" data-req></div>
+    <div>
+      <div class="field"><label class="q" for="start">當天預計出發時間<b>*</b></label><input id="start" type="time" data-req><div class="help" style="font-size:13px;margin:0">司機會提前 20 分鐘集合</div></div>
+      <div class="field"><label class="q" for="back">預計幾點迎娶回男方家<b>*</b></label><input id="back" type="time" data-req></div>
+    </div>
+    <div class="field"><label class="q">是否需要接送至餐廳<b>*</b></label>
+      <div class="chips" data-pick="restYN"><button type="button" class="chip">需要</button><button type="button" class="chip">不需要</button></div></div>
+    </div>
+    <div id="loopBox" hidden>
+      <div class="field"><label class="q" for="loop1">當天預計第一圈時間<b>*</b></label><input id="loop1" type="time" data-req><div class="help" style="font-size:13px;margin:0">司機會提前 20 分鐘集合</div></div>
+      <div class="field"><label class="q">是否繞第二圈<b>*</b></label>
+        <div class="chips" data-pick="loop2YN"><button type="button" class="chip">是</button><button type="button" class="chip">否</button></div></div>
+      <div class="field" id="loop2Box" hidden><label class="q" for="loop2T">第二圈預計時間<b>*</b></label><input id="loop2T" type="time"></div>
+    </div>
+    <div id="restBox" hidden>
+      <div class="field"><label class="q" for="restT">預計幾點出發去餐廳<b>*</b></label><input id="restT" type="time"></div>
+      <div class="field"><label class="q" for="restAddr"><span class="pk">C</span>餐廳名稱與地址<b>*</b></label><input id="restAddr" placeholder="例如：○○飯店 台北市…"></div>
+    </div>
+    <div class="note-tip" id="hoursTip" hidden></div>
+
+    <div class="sec"><h2><i>03</i>其他</h2></div>
+    <div class="field"><label class="q">女方是否有準備甘蔗、竹子<b>*</b></label>
+      <div class="chips" data-pick="cane"><button type="button" class="chip">有</button><button type="button" class="chip">沒有</button><button type="button" class="chip">還不確定</button></div></div>
+    <div class="field"><label class="q">上傳行程表或指定路線圖<small>選填</small></label><div class="help">有排好的當天流程表、或想走的路線截圖，可以上傳給司機參考（照片或 PDF，最多 6 個）。</div>
+      <div class="ups" id="ups"></div>
+      <input type="file" id="upIn" accept="image/*,application/pdf" multiple hidden>
+      <button type="button" class="addstop" id="upBtn">＋ 上傳檔案</button></div>
+    <div class="field"><label class="q" for="note">想提醒司機的事<small>選填</small></label><div class="help">例如：停車位置、要多停的地點、長輩上下車需要協助。</div><textarea id="note" maxlength="800"></textarea></div>
+
+    <div class="err" id="err"></div>
+    <button class="go" id="go" type="submit">確認送出</button>
+  </form>
+
+  <div class="done2" id="done" hidden>
+    <div class="d-head"><span class="d-brand">好好禮車</span><span class="d-en">NICE WEDDING CAR</span><div class="d-sub">婚禮用車 ・ 行前確認</div></div>
+    <div class="d-check" aria-hidden="true"><svg viewBox="0 0 24 24" width="46" height="46" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+    <div class="d-ok">已成功送出</div>
+    <h2 class="d-title">收到囉，謝謝你們！</h2>
+    <p class="d-lead">你們的行前確認資料已送出。<br>謝謝你們用心準備每一個細節。</p>
+    <div class="d-card"><svg class="d-ic" viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v5A2.5 2.5 0 0 1 17.5 14H9l-4 3.5V14.3A2.5 2.5 0 0 1 4 11.5z"/></svg>
+      <div><b>有變動也不用擔心</b><p>若時間、地點或其他安排有調整，<br>直接在 LINE 告訴我們就好。</p></div></div>
+    <a class="d-btn" id="backLine" href="https://line.me/R/ti/p/@niceweddingcar">完成，返回 LINE<span aria-hidden="true">→</span></a>
+    <p class="d-foot">期待陪你們，迎接美好的一天。</p>
+  </div>
+</div>
+<script>
+(function(){
+  var BOT = 'https://script.google.com/macros/s/AKfycbwoKk13j5YOtkA5cTh3FtvECekYm0uMBPsid1H--kB7bhUVpDFvSnSA0iTzCfc8IT11_Q/exec';
+  var LIFF_ID = '';   // 行前確認 LIFF（@niceweddingcar 同一個 provider 的 LINE Login 頻道）；空白＝不登入也能填
+  var $ = function(id){ return document.getElementById(id); };
+  var pick = {}, PLAN = 0, idToken = '', no = '', k = '', PREVIEW = false;
+  function q(){ var Q = new URLSearchParams(location.search); no = (Q.get('no') || '').trim(); k = (Q.get('k') || '').trim(); PREVIEW = Q.get('preview') === '1'; }
+  function post(body){ return fetch(BOT, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body) }).then(function(r){ return r.json(); }); }
+  function bad(t){ $('loading').hidden = true; $('bad').hidden = false; $('bad').textContent = t; }
+  function setPick(key, v){
+    var g = document.querySelector('[data-pick="' + key + '"]'); if (!g) return;
+    Array.prototype.forEach.call(g.querySelectorAll('.chip'), function(c){ var on = !!v && c.textContent.trim() === v; c.setAttribute('aria-pressed', on ? 'true' : 'false'); });
+    pick[key] = v || '';
+    var loop = pick.mode === '單點繞圈';
+    $('wedBox').hidden = loop; $('loopBox').hidden = !loop;
+    $('restBox').hidden = loop || pick.restYN !== '需要'; $('loop2Box').hidden = !loop || pick.loop2YN !== '是';
+    hoursTip();
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('[data-pick]'), function(g){
+    g.addEventListener('click', function(e){ var b = e.target.closest('.chip'); if (!b) return; var v = b.textContent.trim(); setPick(g.getAttribute('data-pick'), pick[g.getAttribute('data-pick')] === v ? '' : v); g.classList.remove('bad'); });
+  });
+  function mins(t){ var m = /^(\d{1,2}):(\d{2})/.exec(t || ''); return m ? (+m[1]) * 60 + (+m[2]) : null; }
+  function hoursTip(){
+    var loop = pick.mode === '單點繞圈', el = $('hoursTip');
+    var s = loop ? mins($('loop1').value) : mins($('start').value), last = loop ? (pick.loop2YN === '是' ? mins($('loop2T').value) : s) : pick.restYN === '需要' ? mins($('restT').value) : mins($('back').value);
+    if (!PLAN || s == null || last == null){ el.hidden = true; return; }
+    var d = last - s; if (d < 0) d += 1440; d += 30;
+    if (d > PLAN * 60 + 15){ el.hidden = false; el.textContent = '提醒：依照上面的時間，預估用車約 ' + (d / 60).toFixed(1) + ' 小時（含最後一段約 30 分鐘車程），超過你們的方案 ' + PLAN + ' 小時，可能會有加時費用。時間沒問題的話照樣送出就好，客服會再跟你們確認。'; }
+    else el.hidden = true;
+  }
+  ['start', 'back', 'restT', 'loop1', 'loop2T'].forEach(function(id){ $(id).addEventListener('input', hoursTip); });
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){ return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+  function fill(j){
+    PLAN = +j.hours || 0;
+    var d = j.date ? j.date.split('-') : null;
+    $('sum').innerHTML = '<div><span class="k">訂單</span><b>' + esc(j.no) + '</b></div>' +
+      (j.couple ? '<div><span class="k">新人</span>' + esc(j.couple) + '</div>' : '') +
+      (d ? '<div><span class="k">用車日</span>' + (+d[1]) + ' 月 ' + (+d[2]) + ' 日（' + '日一二三四五六'.charAt(new Date(+d[0], d[1] - 1, +d[2]).getDay()) + '）</div>' : '') +
+      (j.cars ? '<div><span class="k">禮車</span>' + esc(j.cars) + '</div>' : '') +
+      (PLAN ? '<div><span class="k">方案</span>' + PLAN + ' 小時</div>' : '');
+    var p = j.pre || {};
+    ['name', 'phone', 'meet', 'wed', 'start', 'back', 'restT', 'restAddr', 'loop1', 'loop2T', 'note'].forEach(function(id){ if (p[id]) $(id).value = p[id]; });
+    setPick('mode', p.mode === 'loop' ? '單點繞圈' : '迎娶（男方家 ⇄ 女方家）'); setPick('combo', p.combo); setPick('restYN', p.restYN); setPick('loop2YN', p.loop2YN); setPick('cane', p.cane);
+    if (j.doneAt){ var t = new Date(j.doneAt); $('again').hidden = false; $('again').textContent = '你們在 ' + (t.getMonth() + 1) + '/' + t.getDate() + ' ' + ('0' + t.getHours()).slice(-2) + ':' + ('0' + t.getMinutes()).slice(-2) + ' 已經送出過；下面是上次的內容，有要修改再送出一次即可。'; $('go').textContent = '更新送出'; }
+    $('loading').hidden = true; $('f').hidden = false; hoursTip();
+  }
+
+  $('f').addEventListener('submit', function(e){
+    e.preventDefault(); var miss = [];
+    var loop = pick.mode === '單點繞圈';
+    Array.prototype.forEach.call(document.querySelectorAll('[data-req]'), function(el){ if (el.closest('[hidden]')){ el.classList.remove('bad'); return; } var ok = !!el.value.trim(); el.classList.toggle('bad', !ok); if (!ok) miss.push(el); });
+    (loop ? ['combo', 'loop2YN', 'cane'] : ['combo', 'restYN', 'cane']).forEach(function(kk){ var g = document.querySelector('[data-pick="' + kk + '"]'); var ok = !!pick[kk]; g.classList.toggle('bad', !ok); if (!ok) miss.push(g); });
+    if (loop && pick.loop2YN === '是' && !$('loop2T').value){ $('loop2T').classList.add('bad'); miss.push($('loop2T')); }
+    if (!loop && pick.restYN === '需要') ['restT', 'restAddr'].forEach(function(id){ var el = $(id), ok = !!el.value.trim(); el.classList.toggle('bad', !ok); if (!ok) miss.push(el); });
+    if (miss.length){ $('err').textContent = '還有 ' + miss.length + ' 個欄位沒填喔'; miss[0].scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
+    if (!/^[0-9+\-\s()]{8,20}$/.test($('phone').value.trim())){ $('err').textContent = '電話格式好像不太對，再確認一下'; $('phone').classList.add('bad'); return; }
+    var f = loop ? { mode: 'loop', name: $('name').value.trim(), phone: $('phone').value.trim(), meet: $('meet').value.trim(), combo: pick.combo, loop1: $('loop1').value, loop2YN: pick.loop2YN, loop2T: pick.loop2YN === '是' ? $('loop2T').value : '', cane: pick.cane, note: $('note').value.trim() }
+      : { mode: '', name: $('name').value.trim(), phone: $('phone').value.trim(), meet: $('meet').value.trim(), wed: $('wed').value.trim(), start: $('start').value, back: $('back').value,
+      combo: pick.combo, restYN: pick.restYN, restT: pick.restYN === '需要' ? $('restT').value : '', restAddr: pick.restYN === '需要' ? $('restAddr').value.trim() : '', cane: pick.cane, note: $('note').value.trim() };
+    $('err').textContent = '';
+    if (ups.some(function(u){ return u.busy; })){ $('err').textContent = '檔案還在上傳，請稍等一下再送出'; return; }
+    if (PREVIEW){ done(); return; }
+    $('go').disabled = true; $('go').textContent = '送出中…';
+    post({ action: 'wedConfirm', op: 'submit', no: no, k: k, hp: $('hp').value, idToken: idToken, f: f, files: ups.filter(function(u){ return u.id; }).map(function(u){ return { id: u.id, name: u.name, pdf: u.pdf }; }) }).then(function(j){
+      if (!j || !j.ok) throw new Error((j && j.error) || '送出失敗');
+      done();
+    }).catch(function(er){ $('go').disabled = false; $('go').textContent = '確認送出'; $('err').textContent = (er && er.message || '送出失敗') + '，請再試一次，或直接在 LINE 告訴我們。'; });
+  });
+  function done(){
+    $('f').hidden = true; $('done').hidden = false; window.scrollTo(0, 0);
+    document.querySelector('.brand').hidden = true; document.querySelector('h1').hidden = true;
+    $('backLine').onclick = function(e){ try { if (window.liff && LIFF_ID && liff.isInClient()){ e.preventDefault(); liff.closeWindow(); } } catch (x) {} };
+
+  }
+
+  // 上傳：照片先縮到長邊 2000px 再傳，PDF 直接傳（9MB 內）
+  var ups = [];
+  $('upBtn').addEventListener('click', function(){ $('upIn').click(); });
+  $('upIn').addEventListener('change', function(){ Array.prototype.slice.call(this.files || []).forEach(addFile); this.value = ''; });
+  function renderUps(){
+    $('ups').innerHTML = ''; $('upBtn').disabled = ups.length >= 6;
+    ups.forEach(function(u, i){
+      var d = document.createElement('div'); d.className = 'up' + (u.busy ? ' busy' : '');
+      if (u.thumb){ var im = new Image(); im.src = u.thumb; d.appendChild(im); } else d.appendChild(document.createTextNode((u.pdf ? '📄 ' : '') + u.name));
+      if (u.err){ d.textContent = '❌ ' + u.err; d.style.color = 'var(--warn)'; }
+      var x = document.createElement('button'); x.type = 'button'; x.className = 'x'; x.textContent = '×'; x.setAttribute('aria-label', '移除');
+      x.onclick = function(){ ups.splice(i, 1); renderUps(); }; d.appendChild(x); $('ups').appendChild(d);
+    });
+  }
+  function toB64(blob){ return new Promise(function(ok, no){ var r = new FileReader(); r.onload = function(){ ok(String(r.result).split(',')[1]); }; r.onerror = no; r.readAsDataURL(blob); }); }
+  function shrink(file){
+    return new Promise(function(ok){
+      var url = URL.createObjectURL(file), im = new Image();
+      im.onload = function(){ var m = 2000, w = im.naturalWidth, h = im.naturalHeight, r = Math.min(1, m / Math.max(w, h)); var c = document.createElement('canvas'); c.width = Math.round(w * r); c.height = Math.round(h * r);
+        c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); URL.revokeObjectURL(url); c.toBlob(function(b){ ok({ blob: b || file, thumb: c.toDataURL('image/jpeg', .5) }); }, 'image/jpeg', .85); };
+      im.onerror = function(){ URL.revokeObjectURL(url); ok({ blob: file, thumb: '' }); };
+      im.src = url;
+    });
+  }
+  function addFile(file){
+    if (ups.length >= 6) return;
+    var pdf = file.type === 'application/pdf';
+    if (!pdf && !/^image\//.test(file.type)){ $('err').textContent = '只能上傳照片或 PDF'; return; }
+    var u = { name: file.name || '檔案', pdf: pdf, busy: true }; ups.push(u); renderUps();
+    (pdf ? Promise.resolve({ blob: file, thumb: '' }) : shrink(file)).then(function(r){
+      u.thumb = r.thumb; if (r.blob.size > 9 * 1024 * 1024) throw new Error('檔案太大');
+      return toB64(r.blob).then(function(b64){
+        if (PREVIEW) return { ok: true, id: 'preview' };
+        return post({ action: 'wedConfirm', op: 'upload', no: no, k: k, mime: pdf ? 'application/pdf' : (r.blob.type || 'image/jpeg'), b64: b64 });
+      });
+    }).then(function(j){ if (!j || !j.ok) throw new Error((j && j.error) || '上傳失敗'); u.id = j.id; })
+      .catch(function(e){ u.err = e && e.message || '上傳失敗'; })
+      .then(function(){ u.busy = false; renderUps(); });
+  }
+
+  function load(){
+    q();
+    if (PREVIEW && new URLSearchParams(location.search).get('gate') === '1'){ $('loading').hidden = true; $('lineGate').hidden = false; $('lineGo').onclick = function(){ $('lineGate').hidden = true; fill2(); }; return; }
+    fill2(); }
+  function fill2(){
+    if (!no || !k){ if (PREVIEW) return fill({ no: no || 'W20261025-01', couple: '王大明 & 林小美', date: '2026-10-25', cars: '特斯拉 Model X 1 台、Model 3 2 台', hours: 4, pre: { name: '林小美', phone: '0912345678', meet: '台北市大安區和平東路二段 1 號', wed: '新北市板橋區文化路一段 100 號', start: '08:30', cane: '' } }); return bad('連結不完整，請回到 LINE 重新點一次客服傳的連結。'); }
+    post({ action: 'wedConfirm', op: 'load', no: no, k: k }).then(function(j){
+      if (!j || !j.ok) return bad((j && j.error) || '找不到這張訂單，請回到 LINE 告訴客服。');
+      fill(j);
+    }).catch(function(){ bad('讀取失敗，請檢查網路後重新整理。'); });
+  }
+  if (LIFF_ID && window.liff){
+    liff.init({ liffId: LIFF_ID }).then(function(){
+      if (!liff.isLoggedIn()){
+        if (liff.isInClient()){ liff.login({ redirectUri: location.href }); return; }
+        // 從 FB／IG 或一般瀏覽器打開：先說明為什麼要用 LINE，客人按了才登入
+        $('loading').hidden = true; $('lineGate').hidden = false;
+        $('lineGo').onclick = function(){ liff.login({ redirectUri: location.href }); };
+        return;
+      }
+      idToken = liff.getIDToken() || ''; load();
+    }).catch(function(){ load(); });
+  } else load();
+})();
+</script>
+</body>
+</html>
