@@ -130,14 +130,14 @@ button.go:disabled{opacity:.6}
 盒裝置於後車廂則不收取固定費。</div>
       <div class="chips" data-pick="cane"><button type="button" class="chip">需要</button><button type="button" class="chip">不需要</button><button type="button" class="chip">待確認</button></div>
     </div>
-    <div class="field"><label class="q">車頭彩安排<b>*</b></label><div class="help">不指定的話，車頭彩由司機預備，無法指定款式。指定車頭彩費用 NT$1,200／1,600，會加在合約金額與尾款。<a href="https://nicoletai-cloud.github.io/nice-hub/deco.html" target="_blank" rel="noopener">查看車頭彩說明</a></div>
+    <div class="field"><label class="q">車頭彩安排<b>*</b></label><div class="help">不指定的話，車頭彩由司機預備，無法指定款式。指定車頭彩費用 NT$1,200／1,600，會加在合約金額與尾款。<a href="https://decoflower.niceweddingcar.com/" target="_blank" rel="noopener">查看車頭彩說明</a></div>
       <div class="chips" data-pick="deco"><button type="button" class="chip">指定車頭彩</button><button type="button" class="chip">不指定車頭彩（由司機預備）</button><button type="button" class="chip">待確認</button></div>
       <div id="decoBox" class="decobox" hidden>
         <div class="help" id="decoHelp">請選一款（以下為您用車日期可預訂的款式）：</div>
         <div class="dgrid" id="decoGrid"></div>
         <label class="signchk"><input type="checkbox" id="signOn"> 加購客製化英文名字木牌 <b>+NT$1,000</b></label>
         <div id="signBox" hidden>
-          <img src="deco/sign-sample.jpg" alt="客製化英文名字木牌示意" class="signimg" loading="lazy">
+          <img src="https://decoflower.niceweddingcar.com/deco/sign-sample.jpg" alt="客製化英文名字木牌示意" class="signimg" loading="lazy">
           <div class="note-tip">用車結束後，名牌會提供新人做紀念。</div><div class="help">示意圖：木牌會放在車頭彩上。</div>
           <input id="signName" maxlength="40" placeholder="英文名字，例如：Billy &amp; Emma" autocomplete="off">
         </div>
@@ -145,15 +145,12 @@ button.go:disabled{opacity:.6}
       </div>
     </div>
 
-    <div class="field"><label class="q">請問您是從哪裡知道好好禮車的？（選填）</label>
-      <div class="chips" data-pick="via"><button type="button" class="chip">Google 搜尋／地圖</button><button type="button" class="chip">Instagram</button><button type="button" class="chip">Facebook</button><button type="button" class="chip">婚顧／婚禮廠商介紹</button><button type="button" class="chip">朋友介紹</button><button type="button" class="chip">網路文章／論壇</button><button type="button" class="chip" data-other>其他</button></div><input id="viaOther" class="sub" placeholder="例如：朋友或婚顧的名字" hidden>
-    </div>
     <div class="err" id="err"></div>
     <button class="go" id="go" type="submit">送出</button>
   </form>
 
   <div class="done" id="done" hidden>
-    <div class="big">🤍</div>
+    <div class="big">🧡</div>
     <h2>已收到，謝謝你們！</h2>
     <p>我們會依照這份資料製作電子合約。
 用車前一週會再與你們核對確切行程與時間。
@@ -232,7 +229,7 @@ button.go:disabled{opacity:.6}
       var b = document.createElement('button'); b.type = 'button'; b.className = 'dcard'; b.setAttribute('aria-pressed', z.code === decoSel ? 'true' : 'false');
       var nm = (z.code.length === 1 ? z.code + '. ' : '') + (z.name || (z.code.length > 1 ? '' : DECO_N[z.code] || '')), p = dPrice(z);
       b.innerHTML = '<img loading="lazy" alt=""><div class="dn"></div><div class="dp"></div>';
-      var im = b.querySelector('img'); im.src = 'deco/deco-' + encodeURIComponent(z.code) + '.jpg'; im.onerror = function(){ im.remove(); };
+      var im = b.querySelector('img'); im.src = 'https://decoflower.niceweddingcar.com/deco/deco-' + encodeURIComponent(z.code) + '.jpg'; im.onerror = function(){ im.remove(); };
       b.querySelector('.dn').textContent = nm || z.code; b.querySelector('.dp').textContent = p ? money(p) : '價格請洽客服';
       b.onclick = function(){ decoSel = decoSel === z.code ? '' : z.code; renderDeco(); $('decoGrid').classList.remove('bad'); };
       g.appendChild(b);
@@ -327,7 +324,7 @@ button.go:disabled{opacity:.6}
     if (pick.deco === '指定車頭彩' && $('signOn').checked && !sign) return fail('請填寫木牌上的英文名字', $('signName'));
     var body = { action: 'wedForm', hp: $('hp').value, no: $('no').value.trim(), groom: $('groom').value.trim(), bride: $('bride').value.trim(), role: role, rel: rel, phone: $('phone').value.trim(),
       start: $('start').value, end: $('end').value, meet: $('meet').value.trim(), wed: wedSame() ? $('meet').value.trim() : $('wed').value.trim(),
-      foundVia: val('via'), route: later ? '行前一週確認' : routeText(), meetL: val('meetL'), wedL: wedSame() ? val('meetL') : val('wedL'), dayFlow: Array.prototype.filter.call($('dayFlow').children, function(c){ return c.getAttribute('aria-pressed') === 'true'; }).map(function(c){ return c.textContent; }).join('、'), note: $('note').value.trim(), cane: pick.cane, deco: pick.deco, decoStyle: dz ? (dz.code + (dz.name || DECO_N[dz.code] ? '. ' + (dz.name || DECO_N[dz.code]) : '')) : '', decoSign: sign, decoFee: dz ? String(decoFee()) : '' };
+      route: later ? '行前一週確認' : routeText(), meetL: val('meetL'), wedL: wedSame() ? val('meetL') : val('wedL'), dayFlow: Array.prototype.filter.call($('dayFlow').children, function(c){ return c.getAttribute('aria-pressed') === 'true'; }).map(function(c){ return c.textContent; }).join('、'), note: $('note').value.trim(), cane: pick.cane, deco: pick.deco, decoStyle: dz ? (dz.code + (dz.name || DECO_N[dz.code] ? '. ' + (dz.name || DECO_N[dz.code]) : '')) : '', decoSign: sign, decoFee: dz ? String(decoFee()) : '' };
     var SV = stopVals(); for (var si = 0; si < SV.length; si++){ if (!SV[si].a) return fail('請填寫停靠地點 ' + 'CDEFG'.charAt(si) + ' 的地址', stopBlocks()[si].querySelector('.sAddr')); body['o' + (si + 1)] = SV[si].a; body['o' + (si + 1) + 'L'] = SV[si].l; }
     if (PREVIEW){ $('f').hidden = true; $('done').hidden = false; $('done').querySelector('p').textContent = '（預覽模式：資料沒有送出）\n\n' + Object.keys(body).filter(function(k){ return k !== 'action' && k !== 'hp' && body[k]; }).map(function(k){ return k + '：' + body[k]; }).join('\n'); window.scrollTo(0, 0); return; }
     var go = $('go'); go.disabled = true; go.textContent = '送出中…';
