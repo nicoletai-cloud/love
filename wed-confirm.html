@@ -126,6 +126,9 @@ button.go:disabled{opacity:.6}
     <div class="note-tip" id="again" hidden></div>
     <div class="hp" aria-hidden="true"><label>請勿填寫<input id="hp" tabindex="-1" autocomplete="off"></label></div>
 
+    <div class="field" id="whoBox"><label class="q">請問填寫的是<b>*</b></label><div class="help">婚顧或主持人幫新人代填也可以，請選「我是婚顧／主持人」。</div>
+      <div class="chips" data-pick="who"><button type="button" class="chip">我是新人</button><button type="button" class="chip">我是婚顧／主持人（代填）</button></div></div>
+
     <div class="sec"><h2><i>01</i>當天聯絡人</h2><p>司機當天會聯絡這位，請填寫方便接電話的人。</p></div>
     <div class="row2">
       <div class="field"><label class="q" for="name">聯絡人姓名<b>*</b></label><input id="name" autocomplete="name" data-req></div>
@@ -228,7 +231,7 @@ button.go:disabled{opacity:.6}
     var p = j.pre || {};
     ['name', 'phone', 'meet', 'wed', 'start', 'back', 'restT', 'restAddr', 'loop1', 'loop2T', 'note'].forEach(function(id){ if (p[id]) $(id).value = p[id]; });
     setPick('mode', p.mode === 'loop' ? '單點繞圈' : '迎娶（男方家 ⇄ 女方家）'); setPick('combo', p.combo); setPick('restYN', p.restYN); setPick('loop2YN', p.loop2YN); setPick('cane', p.cane);
-    if (j.doneAt){ var t = new Date(j.doneAt); $('again').hidden = false; $('again').textContent = '你們在 ' + (t.getMonth() + 1) + '/' + t.getDate() + ' ' + ('0' + t.getHours()).slice(-2) + ':' + ('0' + t.getMinutes()).slice(-2) + ' 已經送出過；下面是上次的內容，有要修改再送出一次即可。'; $('go').textContent = '更新送出'; }
+    if (j.doneAt){ var t = new Date(j.doneAt), tt = (t.getMonth() + 1) + '/' + t.getDate() + ' ' + ('0' + t.getHours()).slice(-2) + ':' + ('0' + t.getMinutes()).slice(-2); $('again').hidden = false; $('again').textContent = j.doneWho === 'agent' ? '婚顧／主持人已在 ' + tt + ' 幫忙代填；下面是代填的內容，請再確認一次，有不同直接修改後送出。' : '在 ' + tt + ' 已經送出過；下面是上次的內容，有要修改再送出一次即可。'; $('go').textContent = '更新送出'; }
     $('loading').hidden = true; $('f').hidden = false; hoursTip();
   }
 
@@ -236,7 +239,7 @@ button.go:disabled{opacity:.6}
     e.preventDefault(); var miss = [];
     var loop = pick.mode === '單點繞圈';
     Array.prototype.forEach.call(document.querySelectorAll('[data-req]'), function(el){ if (el.closest('[hidden]')){ el.classList.remove('bad'); return; } var ok = !!el.value.trim(); el.classList.toggle('bad', !ok); if (!ok) miss.push(el); });
-    (loop ? ['combo', 'loop2YN', 'cane'] : ['combo', 'restYN', 'cane']).forEach(function(kk){ var g = document.querySelector('[data-pick="' + kk + '"]'); var ok = !!pick[kk]; g.classList.toggle('bad', !ok); if (!ok) miss.push(g); });
+    (loop ? ['who', 'combo', 'loop2YN', 'cane'] : ['who', 'combo', 'restYN', 'cane']).forEach(function(kk){ var g = document.querySelector('[data-pick="' + kk + '"]'); var ok = !!pick[kk]; g.classList.toggle('bad', !ok); if (!ok) miss.push(g); });
     if (loop && pick.loop2YN === '是' && !$('loop2T').value){ $('loop2T').classList.add('bad'); miss.push($('loop2T')); }
     if (!loop && pick.restYN === '需要') ['restT', 'restAddr'].forEach(function(id){ var el = $(id), ok = !!el.value.trim(); el.classList.toggle('bad', !ok); if (!ok) miss.push(el); });
     if (miss.length){ $('err').textContent = '還有 ' + miss.length + ' 個欄位沒填喔'; miss[0].scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
@@ -248,7 +251,7 @@ button.go:disabled{opacity:.6}
     if (ups.some(function(u){ return u.busy; })){ $('err').textContent = '檔案還在上傳，請稍等一下再送出'; return; }
     if (PREVIEW){ done(); return; }
     $('go').disabled = true; $('go').textContent = '送出中…';
-    post({ action: 'wedConfirm', op: 'submit', no: no, k: k, hp: $('hp').value, idToken: idToken, f: f, files: ups.filter(function(u){ return u.id; }).map(function(u){ return { id: u.id, name: u.name, pdf: u.pdf }; }) }).then(function(j){
+    post({ action: 'wedConfirm', op: 'submit', no: no, k: k, hp: $('hp').value, idToken: idToken, who: /婚顧|主持/.test(pick.who || '') ? 'agent' : 'couple', f: f, files: ups.filter(function(u){ return u.id; }).map(function(u){ return { id: u.id, name: u.name, pdf: u.pdf }; }) }).then(function(j){
       if (!j || !j.ok) throw new Error((j && j.error) || '送出失敗');
       done();
     }).catch(function(er){ $('go').disabled = false; $('go').textContent = '確認送出'; $('err').textContent = (er && er.message || '送出失敗') + '，請再試一次，或直接在 LINE 告訴我們。'; });
