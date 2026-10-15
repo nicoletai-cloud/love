@@ -102,6 +102,9 @@ button.go:disabled{opacity:.6}
 .up img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
 .up .x{position:absolute;top:4px;right:4px;width:26px;height:26px;border-radius:50%;border:0;background:rgba(0,0,0,.55);color:#fff;font-size:15px;line-height:26px;padding:0;cursor:pointer;z-index:1}
 .up.busy::after{content:"上傳中…";position:absolute;inset:0;background:rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center;color:#2f2a24}
+.frrow{border:1px solid var(--line);border-radius:14px;padding:10px 14px 12px;background:var(--surface);display:grid;gap:8px}
+.frrow .t{font-weight:600;font-size:15.5px}
+.frrow .chip{min-width:4.2em}
 .friend{display:block;text-align:center;text-decoration:none;font-weight:700;font-size:17px;color:#fff;background:#06c755;border-radius:12px;min-height:52px;line-height:52px;margin-top:22px}
 </style>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js" charset="utf-8"></script>
@@ -163,6 +166,14 @@ button.go:disabled{opacity:.6}
     <div class="note-tip" id="hoursTip" hidden></div>
 
     <div class="sec"><h2><i>03</i>其他</h2></div>
+    <div class="field"><label class="q">是否有其他親友車加入禮車車隊<b>*</b></label><div class="help">親友自己開的車如果要跟著禮車車隊一起走，請告訴我們排在第幾車，司機好安排隊形。</div>
+      <div class="chips" data-pick="friend"><button type="button" class="chip">有</button><button type="button" class="chip">沒有</button><button type="button" class="chip">還不確定</button></div></div>
+    <div id="frBox" hidden>
+      <div class="field"><label class="q">親友車有幾台<b>*</b></label>
+        <div class="chips" data-pick="friendN"><button type="button" class="chip">1 台</button><button type="button" class="chip">2 台</button><button type="button" class="chip">3 台</button><button type="button" class="chip">4 台</button><button type="button" class="chip">5 台</button><button type="button" class="chip">6 台</button></div></div>
+      <div class="field" id="frPosBox" hidden><label class="q">每台親友車排在第幾車<b>*</b></label><div class="help" id="frHelp"></div>
+        <div id="frPos" style="display:grid;gap:10px"></div></div>
+    </div>
     <div class="field"><label class="q">女方是否有準備甘蔗、竹子<b>*</b></label>
       <div class="chips" data-pick="cane"><button type="button" class="chip">有</button><button type="button" class="chip">沒有</button><button type="button" class="chip">還不確定</button></div></div>
     <div class="field"><label class="q">上傳行程表或指定路線圖<small>選填</small></label><div class="help">有排好的當天流程表、或想走的路線截圖，可以上傳給司機參考（照片或 PDF，最多 6 個）。</div>
@@ -192,7 +203,7 @@ button.go:disabled{opacity:.6}
   var BOT = 'https://script.google.com/macros/s/AKfycbwoKk13j5YOtkA5cTh3FtvECekYm0uMBPsid1H--kB7bhUVpDFvSnSA0iTzCfc8IT11_Q/exec';
   var LIFF_ID = '2009335688-N0uyJ02P';   // 行前確認 LIFF（@niceweddingcar 同一個 provider 的 LINE Login 頻道）；空白＝不登入也能填
   var $ = function(id){ return document.getElementById(id); };
-  var pick = {}, PLAN = 0, idToken = '', no = '', k = '', PREVIEW = false;
+  var pick = {}, frPos = [], CARN = 0, PLAN = 0, idToken = '', no = '', k = '', PREVIEW = false;
   function q(){ var Q = new URLSearchParams(location.search); no = (Q.get('no') || '').trim(); k = (Q.get('k') || '').trim(); PREVIEW = Q.get('preview') === '1'; }
   function post(body){ return fetch(BOT, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body) }).then(function(r){ return r.json(); }); }
   function bad(t){ $('loading').hidden = true; $('bad').hidden = false; $('bad').textContent = t; }
@@ -203,7 +214,30 @@ button.go:disabled{opacity:.6}
     var loop = pick.mode === '單點繞圈';
     $('wedBox').hidden = loop; $('loopBox').hidden = !loop;
     $('restBox').hidden = loop || pick.restYN !== '需要'; $('loop2Box').hidden = !loop || pick.loop2YN !== '是';
+    $('frBox').hidden = pick.friend !== '有';
+    if (key === 'friendN' || key === 'friend') renderFr();
     hoursTip();
+  }
+  function frN(){ return pick.friend === '有' ? (parseInt(pick.friendN, 10) || 0) : 0; }
+  function renderFr(){
+    var n = frN(), T = (CARN || 0) + n, box = $('frPos');
+    $('frPosBox').hidden = !n; while (frPos.length < n) frPos.push(0);
+    if (n) frPos = frPos.map(function(v, i){ return i >= n || v > T ? 0 : v; });
+    var used = frPos.slice(0, n);
+    $('frHelp').textContent = (CARN ? '你們訂了 ' + CARN + ' 台禮車，加上 ' + n + ' 台親友車，車隊共 ' + T + ' 台。' : '') + '第 1 車是車隊最前面那台。';
+    box.innerHTML = '';
+    for (var i = 0; i < n; i++){ (function(i){
+      var r = document.createElement('div'); r.className = 'frrow'; r.setAttribute('data-fr', i);
+      var t = document.createElement('div'); t.className = 't'; t.textContent = n > 1 ? '親友車 ' + (i + 1) : '親友車'; r.appendChild(t);
+      var g = document.createElement('div'); g.className = 'chips';
+      for (var p = 1; p <= T; p++){ (function(p){
+        var b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.textContent = '第 ' + p + ' 車';
+        b.setAttribute('aria-pressed', frPos[i] === p ? 'true' : 'false');
+        b.disabled = frPos[i] !== p && used.indexOf(p) >= 0;
+        b.onclick = function(){ frPos[i] = frPos[i] === p ? 0 : p; renderFr(); };
+        g.appendChild(b); })(p); }
+      if (frPos[i]) r.classList.remove('bad');
+      r.appendChild(g); box.appendChild(r); })(i); }
   }
   Array.prototype.forEach.call(document.querySelectorAll('[data-pick]'), function(g){
     g.addEventListener('click', function(e){ var b = e.target.closest('.chip'); if (!b) return; var v = b.textContent.trim(); setPick(g.getAttribute('data-pick'), pick[g.getAttribute('data-pick')] === v ? '' : v); g.classList.remove('bad'); });
@@ -221,7 +255,7 @@ button.go:disabled{opacity:.6}
   function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){ return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
 
   function fill(j){
-    PLAN = +j.hours || 0;
+    PLAN = +j.hours || 0; CARN = +j.carN || 0;
     var d = j.date ? j.date.split('-') : null;
     $('sum').innerHTML = '<div><span class="k">訂單</span><b>' + esc(j.no) + '</b></div>' +
       (j.couple ? '<div><span class="k">新人</span>' + esc(j.couple) + '</div>' : '') +
@@ -231,6 +265,8 @@ button.go:disabled{opacity:.6}
     var p = j.pre || {};
     ['name', 'phone', 'meet', 'wed', 'start', 'back', 'restT', 'restAddr', 'loop1', 'loop2T', 'note'].forEach(function(id){ if (p[id]) $(id).value = p[id]; });
     setPick('mode', p.mode === 'loop' ? '單點繞圈' : '迎娶（男方家 ⇄ 女方家）'); setPick('combo', p.combo); setPick('restYN', p.restYN); setPick('loop2YN', p.loop2YN); setPick('cane', p.cane);
+    if (p.friendPos) frPos = String(p.friendPos).split(',').map(function(v){ return parseInt(v, 10) || 0; });
+    setPick('friend', p.friend); setPick('friendN', p.friendN ? p.friendN + ' 台' : '');
     if (j.doneAt){ var t = new Date(j.doneAt), tt = (t.getMonth() + 1) + '/' + t.getDate() + ' ' + ('0' + t.getHours()).slice(-2) + ':' + ('0' + t.getMinutes()).slice(-2); $('again').hidden = false; $('again').textContent = j.doneWho === 'agent' ? '婚顧／主持人已在 ' + tt + ' 幫忙代填；下面是代填的內容，請再確認一次，有不同直接修改後送出。' : '在 ' + tt + ' 已經送出過；下面是上次的內容，有要修改再送出一次即可。'; $('go').textContent = '更新送出'; }
     $('loading').hidden = true; $('f').hidden = false; hoursTip();
   }
@@ -239,14 +275,18 @@ button.go:disabled{opacity:.6}
     e.preventDefault(); var miss = [];
     var loop = pick.mode === '單點繞圈';
     Array.prototype.forEach.call(document.querySelectorAll('[data-req]'), function(el){ if (el.closest('[hidden]')){ el.classList.remove('bad'); return; } var ok = !!el.value.trim(); el.classList.toggle('bad', !ok); if (!ok) miss.push(el); });
-    (loop ? ['who', 'combo', 'loop2YN', 'cane'] : ['who', 'combo', 'restYN', 'cane']).forEach(function(kk){ var g = document.querySelector('[data-pick="' + kk + '"]'); var ok = !!pick[kk]; g.classList.toggle('bad', !ok); if (!ok) miss.push(g); });
+    (loop ? ['who', 'combo', 'loop2YN', 'friend', 'cane'] : ['who', 'combo', 'restYN', 'friend', 'cane']).forEach(function(kk){ var g = document.querySelector('[data-pick="' + kk + '"]'); var ok = !!pick[kk]; g.classList.toggle('bad', !ok); if (!ok) miss.push(g); });
     if (loop && pick.loop2YN === '是' && !$('loop2T').value){ $('loop2T').classList.add('bad'); miss.push($('loop2T')); }
     if (!loop && pick.restYN === '需要') ['restT', 'restAddr'].forEach(function(id){ var el = $(id), ok = !!el.value.trim(); el.classList.toggle('bad', !ok); if (!ok) miss.push(el); });
+    if (pick.friend === '有'){
+      var gN = document.querySelector('[data-pick="friendN"]'); gN.classList.toggle('bad', !frN()); if (!frN()) miss.push(gN);
+      Array.prototype.forEach.call(document.querySelectorAll('[data-fr]'), function(r){ var ok = !!frPos[+r.getAttribute('data-fr')]; r.classList.toggle('bad', !ok); if (!ok) miss.push(r); });
+    }
     if (miss.length){ $('err').textContent = '還有 ' + miss.length + ' 個欄位沒填喔'; miss[0].scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
     if (!/^[0-9+\-\s()]{8,20}$/.test($('phone').value.trim())){ $('err').textContent = '電話格式好像不太對，再確認一下'; $('phone').classList.add('bad'); return; }
-    var f = loop ? { mode: 'loop', name: $('name').value.trim(), phone: $('phone').value.trim(), meet: $('meet').value.trim(), combo: pick.combo, loop1: $('loop1').value, loop2YN: pick.loop2YN, loop2T: pick.loop2YN === '是' ? $('loop2T').value : '', cane: pick.cane, note: $('note').value.trim() }
+    var f = loop ? { mode: 'loop', name: $('name').value.trim(), phone: $('phone').value.trim(), meet: $('meet').value.trim(), combo: pick.combo, loop1: $('loop1').value, loop2YN: pick.loop2YN, loop2T: pick.loop2YN === '是' ? $('loop2T').value : '', cane: pick.cane, friend: pick.friend, friendN: frN() ? String(frN()) : '', friendPos: frN() ? frPos.slice(0, frN()).join(',') : '', note: $('note').value.trim() }
       : { mode: '', name: $('name').value.trim(), phone: $('phone').value.trim(), meet: $('meet').value.trim(), wed: $('wed').value.trim(), start: $('start').value, back: $('back').value,
-      combo: pick.combo, restYN: pick.restYN, restT: pick.restYN === '需要' ? $('restT').value : '', restAddr: pick.restYN === '需要' ? $('restAddr').value.trim() : '', cane: pick.cane, note: $('note').value.trim() };
+      combo: pick.combo, restYN: pick.restYN, restT: pick.restYN === '需要' ? $('restT').value : '', restAddr: pick.restYN === '需要' ? $('restAddr').value.trim() : '', cane: pick.cane, friend: pick.friend, friendN: frN() ? String(frN()) : '', friendPos: frN() ? frPos.slice(0, frN()).join(',') : '', note: $('note').value.trim() };
     $('err').textContent = '';
     if (ups.some(function(u){ return u.busy; })){ $('err').textContent = '檔案還在上傳，請稍等一下再送出'; return; }
     if (PREVIEW){ done(); return; }
@@ -308,7 +348,7 @@ button.go:disabled{opacity:.6}
     if (PREVIEW && new URLSearchParams(location.search).get('gate') === '1'){ $('loading').hidden = true; $('lineGate').hidden = false; $('lineGo').onclick = function(){ $('lineGate').hidden = true; fill2(); }; return; }
     fill2(); }
   function fill2(){
-    if (!no || !k){ if (PREVIEW) return fill({ no: no || 'W20261025-01', couple: '王大明 & 林小美', date: '2026-10-25', cars: '特斯拉 Model X 1 台、Model 3 2 台', hours: 4, pre: { name: '林小美', phone: '0912345678', meet: '台北市大安區和平東路二段 1 號', wed: '新北市板橋區文化路一段 100 號', start: '08:30', cane: '' } }); return bad('連結不完整，請回到 LINE 重新點一次客服傳的連結。'); }
+    if (!no || !k){ if (PREVIEW) return fill({ no: no || 'W20261025-01', couple: '王大明 & 林小美', date: '2026-10-25', cars: '特斯拉 Model X 1 台、Model 3 2 台', carN: 3, hours: 4, pre: { name: '林小美', phone: '0912345678', meet: '台北市大安區和平東路二段 1 號', wed: '新北市板橋區文化路一段 100 號', start: '08:30', cane: '' } }); return bad('連結不完整，請回到 LINE 重新點一次客服傳的連結。'); }
     post({ action: 'wedConfirm', op: 'load', no: no, k: k }).then(function(j){
       if (!j || !j.ok) return bad((j && j.error) || '找不到這張訂單，請回到 LINE 告訴客服。');
       fill(j);
