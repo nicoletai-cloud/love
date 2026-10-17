@@ -28,8 +28,8 @@ h2{font-size:19px;margin:0 0 10px}
 .opt[aria-pressed="true"] .dot::after{content:"";width:12px;height:12px;border-radius:50%;background:var(--accent)}
 .opt b{display:block;font-size:17px}
 .opt span{display:block;color:var(--muted);font-size:15px;margin-top:2px}
-.opt .amt{color:var(--accent);font-weight:700;font-size:20px;margin-top:4px}
-.warnbox{background:var(--warn-soft);color:var(--warn);border-radius:12px;padding:12px 14px;font-size:15.5px;font-weight:600}
+.opt .amt{color:var(--muted);font-weight:400;font-size:14.5px;margin-top:2px}
+.warnbox{background:var(--soft);color:var(--muted);border-radius:12px;padding:10px 14px;font-size:14.5px;font-weight:400}
 .chk{display:flex;gap:10px;align-items:flex-start;font-size:16px;cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
 .chk input{width:22px;height:22px;margin:1px 0 0;flex:none;accent-color:var(--accent)}
 .err{color:var(--warn);font-size:14.5px;margin:4px 0 0;min-height:0}
@@ -37,12 +37,30 @@ button.go{font:inherit;font-weight:700;font-size:18px;color:var(--accent-ink);ba
 button.go:disabled{opacity:.6}
 .ghost{font:inherit;font-size:15.5px;color:var(--accent);background:transparent;border:1px solid var(--accent);border-radius:12px;min-height:46px;width:100%;cursor:pointer}
 textarea{font:inherit;font-size:16px;width:100%;min-height:96px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface);color:var(--fg)}
-.done{text-align:center;padding:28px 0 8px}
-.done .ck{width:84px;height:84px;border-radius:50%;background:var(--ok-soft);color:var(--ok);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:40px}
-.done h2{font-size:24px;margin:6px 0 8px}
-.done p{color:var(--muted);margin:0 0 6px;white-space:pre-line}
-.pill{display:inline-block;background:var(--soft);border-radius:999px;padding:6px 14px;font-weight:600;margin:6px 0 14px}
-a.line{display:flex;align-items:center;justify-content:center;background:var(--accent);color:var(--accent-ink);text-decoration:none;font-weight:700;border-radius:12px;min-height:54px;margin-top:16px}
+/* 完成畫面（2026-10-17 依 Nicole 提供的版面） */
+.done{text-align:center;padding:26px 4px 6px;max-width:480px;margin:0 auto}
+.d-brand{color:var(--accent);font-weight:600;font-size:22px;letter-spacing:.18em}
+.d-en{color:var(--muted);font-size:12.5px;letter-spacing:.32em;margin-top:6px}
+.d-ck{width:118px;height:128px;border-radius:50%;border:1.5px solid #b9c2ad;color:#6d7f5e;display:flex;align-items:center;justify-content:center;margin:38px auto 30px}
+.d-kicker{color:var(--muted);font-size:15px;letter-spacing:.14em}
+.d-title{font-family:"Songti TC","Noto Serif TC","Source Han Serif TC","PMingLiU",serif;font-weight:400;font-size:30px;letter-spacing:.06em;line-height:1.4;margin:12px 0 12px}
+.d-sub{color:var(--muted);font-size:16px;letter-spacing:.05em;margin:0;white-space:pre-line}
+.d-hr{border:0;border-top:1px solid var(--line);margin:34px 0 26px}
+.d-tips{text-align:left}
+.d-tips h3{font-size:16px;font-weight:600;color:var(--muted);letter-spacing:.06em;margin:0 0 18px}
+.d-row{display:flex;justify-content:space-between;gap:12px;color:var(--muted);font-size:16px;letter-spacing:.04em}
+.d-note{display:flex;gap:10px;color:var(--muted);font-size:15.5px;line-height:1.9;margin-top:14px}
+.d-note i{font-style:normal;font-size:13px;flex:none;line-height:2.2}
+a.line{display:flex;align-items:center;justify-content:center;gap:22px;background:var(--accent);color:var(--accent-ink);text-decoration:none;font-weight:600;letter-spacing:.08em;border-radius:6px;min-height:62px;margin-top:36px}
+.d-paid{text-align:left;margin-top:28px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px 16px;display:grid;gap:12px}
+.d-paid h3{font-size:16px;font-weight:600;margin:0;letter-spacing:.04em}
+.d-paid p{color:var(--muted);font-size:15px;margin:0}
+.d-paid label{display:grid;gap:6px;font-size:15px;color:var(--muted)}
+.d-paid input[type=text]{font:inherit;font-size:18px;letter-spacing:.2em;border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--bg);color:var(--fg);width:100%}
+.d-paid input[type=file]{font-size:14px;color:var(--muted)}
+.d-paid .go{border-radius:6px;min-height:52px;font-weight:600;letter-spacing:.06em}
+.d-paid .okmsg{color:#6d7f5e;font-size:15.5px}
+.d-foot{color:var(--muted);font-size:14px;letter-spacing:.1em;margin-top:56px}
 .prev{font-size:14.5px;color:var(--muted);text-align:center;margin-top:10px}
 /* iPhone Duo 打開（寬螢幕）：左邊確認單、右邊付款與確認 */
 @media (min-width:720px){.wrap{max-width:1000px;padding:28px 24px 40px}.grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:22px;align-items:start}.side{position:sticky;top:16px}}
@@ -50,8 +68,8 @@ a.line{display:flex;align-items:center;justify-content:center;background:var(--a
 </head>
 <body>
 <div class="wrap">
-  <div class="brand">好好禮車 NICE WEDDING CAR</div>
-  <h1>禮車服務確認單</h1>
+  <div id="top"><div class="brand">好好禮車 NICE WEDDING CAR</div>
+  <h1>禮車服務確認單</h1></div>
   <div id="loading" class="load">讀取確認單中…</div>
   <div id="bad" class="load" hidden></div>
 
@@ -66,10 +84,10 @@ a.line{display:flex;align-items:center;justify-content:center;background:var(--a
         <div id="payBox">
           <h2>尾款付款方式</h2>
           <div style="display:grid;gap:10px">
-            <button type="button" class="opt" data-pay="cash" aria-pressed="false"><i class="dot"></i><div><b>用車當天付現金</b><span>尾款＋司機禮請包成一包，當天交給車隊負責人</span><div class="amt" id="amtCash"></div></div></button>
-            <button type="button" class="opt" data-pay="transfer" aria-pressed="false"><i class="dot"></i><div><b>提前匯款</b><span>最晚在用車前一天匯款完成，匯款資訊在確認單的「付款」段落</span><div class="amt" id="amtXfer"></div></div></button>
+            <button type="button" class="opt" data-pay="cash" aria-pressed="false"><i class="dot"></i><div><b>用車當天付現金</b><span>請於用車日將尾款及司機禮包成一包交給車隊負責人，可由親友轉交</span><div class="amt" id="amtCash"></div></div></button>
+            <button type="button" class="opt" data-pay="transfer" aria-pressed="false"><i class="dot"></i><div><b>提前匯款</b><span>最晚在用車前一天匯款完成，匯款資訊在確認單的「付款」段落；匯款後可在這個頁面回傳匯款資訊</span><div class="amt" id="amtXfer"></div></div></button>
           </div>
-          <div class="warnbox" style="margin-top:12px">⚠️ 因會計無法即時對帳，請勿於用車當天匯款。</div>
+          <div class="warnbox" style="margin-top:12px">小提醒：因會計無法即時對帳，選擇匯款的話請勿於用車當天匯款，謝謝您 🙏</div>
         </div>
         <label class="chk"><input type="checkbox" id="okChk"><span>我已核對確認單的所有內容，皆正確無誤</span></label>
         <div class="err" id="err"></div>
@@ -86,11 +104,30 @@ a.line{display:flex;align-items:center;justify-content:center;background:var(--a
   </div>
 
   <div id="done" class="done" hidden>
-    <div class="ck" aria-hidden="true">✓</div>
-    <h2 id="dTitle">已確認，謝謝你們！</h2>
-    <div class="pill" id="dPay"></div>
-    <p id="dText"></p>
-    <a class="line" href="https://line.me/R/ti/p/@niceweddingcar">完成，返回 LINE</a>
+    <div class="d-brand">好好禮車</div>
+    <div class="d-en">NICE WEDDING CAR</div>
+    <div class="d-ck" aria-hidden="true"><svg viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 12.5l4 5L18 6"/></svg></div>
+    <div class="d-kicker">禮車服務確認單</div>
+    <h2 class="d-title" id="dTitle">美好的一天，已為你安排</h2>
+    <p class="d-sub" id="dSub">已確認，謝謝你們！</p>
+    <div id="dTips"><hr class="d-hr">
+      <div class="d-tips"><h3>用車當天的小提醒</h3>
+        <div class="d-row"><span id="dPay"></span><span id="dAmt"></span></div>
+        <div class="d-note"><i aria-hidden="true">✉</i><span id="dText"></span></div>
+      </div></div>
+    <div class="d-paid" id="dPaid" hidden>
+      <h3>已經匯款了嗎？</h3>
+      <p id="paidLead">匯款後請回傳匯款資訊，方便我們對帳，謝謝您 🙏</p>
+      <div id="paidForm" style="display:grid;gap:12px">
+        <label>帳號後五碼<input type="text" id="last5" inputmode="numeric" maxlength="5" autocomplete="off" placeholder="例：12345"></label>
+        <label>或上傳轉帳截圖<input type="file" id="shot" accept="image/*,application/pdf"></label>
+        <div class="err" id="paidErr"></div>
+        <button class="go" id="paidGo" type="button">回傳匯款資訊</button>
+      </div>
+      <div class="okmsg" id="paidOk" hidden></div>
+    </div>
+    <a class="line" href="https://line.me/R/ti/p/@niceweddingcar">完成，返回 LINE<span aria-hidden="true">↗</span></a>
+    <div class="d-foot">好好禮車 · 好好陪伴每一段幸福</div>
   </div>
 </div>
 <script>
@@ -104,21 +141,24 @@ a.line{display:flex;align-items:center;justify-content:center;background:var(--a
   function bad(t){ $('loading').hidden = true; $('bad').hidden = false; $('bad').textContent = t; }
   function md(d){ var m = String(d || '').match(/^(\d{4})-(\d{2})-(\d{2})/); return m ? m[1] + '/' + (+m[2]) + '/' + (+m[3]) : ''; }
   function tm(t){ var d = new Date(+t); return (d.getMonth() + 1) + '/' + d.getDate() + ' ' + ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2); }
-  function payTxt(p, bal){ return p === 'cash' ? '尾款：用車當天付現金 ' + money(bal) : p === 'transfer' ? '尾款：提前匯款 ' + money(bal) + '（最晚用車前一天）' : '月結，不用支付尾款'; }
+  function payTxt(p, bal){ return p === 'cash' ? '尾款付款方式：用車當天付現金' : p === 'transfer' ? '尾款付款方式：提前匯款' : '月結，不用支付尾款'; }
   function setPay(p){ pay = p; Array.prototype.forEach.call(document.querySelectorAll('.opt'), function(b){ b.setAttribute('aria-pressed', b.dataset.pay === p ? 'true' : 'false'); }); }
   function show(j){
     J = j; $('loading').hidden = true; $('main').hidden = false;
     $('head').textContent = '訂單編號：' + j.no + (j.date ? '｜用車日期：' + md(j.date) : '') + (j.couple ? '\n' + j.couple : '');
     $('memo').textContent = j.text || '';
     if (j.mon) $('payBox').hidden = true;
-    $('amtCash').textContent = money(j.bal) + '（尾款＋司機禮）'; $('amtXfer').textContent = money(j.bal);
+    $('amtCash').textContent = '金額 ' + money(j.bal) + '（尾款及司機禮）'; $('amtXfer').textContent = '金額 ' + money(j.bal);
+    if (j.ok && j.ok.pay === 'transfer' && !(j.fix && j.fix.at > j.ok.at)){ setPay('transfer'); return done('ok'); }
     if (j.ok){ setPay(j.ok.pay === 'none' ? '' : j.ok.pay); $('okChk').checked = true; $('prevOk').hidden = false; $('prevOk').textContent = '你已於 ' + tm(j.ok.at) + ' 確認過（' + payTxt(j.ok.pay, j.bal) + '），如需更改付款方式可以重新送出。'; }
   }
   function done(kind){
-    $('main').hidden = true; $('done').hidden = false; window.scrollTo(0, 0);
-    if (kind === 'fix'){ $('dTitle').textContent = '已收到修改需求'; $('dPay').hidden = true; $('dText').textContent = '我們會儘快更新確認單，再傳給你們核對一次。'; return; }
-    $('dPay').textContent = payTxt(J.mon ? 'none' : pay, J.bal);
-    $('dText').textContent = pay === 'cash' ? '當天請把尾款＋司機禮包成一包，交給車隊負責人就好。' : pay === 'transfer' ? '請在用車前一天以前完成匯款。\n因會計無法即時對帳，請勿於用車當天匯款，謝謝！' : '期待陪你們迎接美好的一天。';
+    $('main').hidden = true; $('top').hidden = true; $('done').hidden = false; window.scrollTo(0, 0);
+    if (kind === 'fix'){ $('dTitle').textContent = '已收到修改需求'; $('dSub').textContent = '我們會儘快更新確認單，\n再傳給你們核對一次。'; $('dTips').hidden = true; return; }
+    var nt = 'NT$ ' + Math.round(+J.bal || 0).toLocaleString('en-US');
+    if (J.mon){ $('dPay').textContent = '尾款・月結'; $('dAmt').textContent = ''; $('dText').textContent = '期待陪你們迎接美好的一天。'; }
+    else if (pay === 'cash'){ $('dPay').textContent = '尾款・現金支付'; $('dAmt').textContent = nt; $('dText').textContent = '尾款與司機禮包可一起準備，當天交給車隊負責人即可，也可由親友轉交。'; }
+    else { $('dPay').textContent = '尾款・提前匯款'; $('dAmt').textContent = nt; $('dText').textContent = '請於用車前一天完成匯款；因會計無法即時對帳，請勿於用車當天匯款。'; $('dPaid').hidden = false; if (J.paid) paidDone(J.paid.at); }
   }
   Array.prototype.forEach.call(document.querySelectorAll('.opt'), function(b){ b.onclick = function(){ setPay(b.dataset.pay); $('err').textContent = ''; }; });
   $('go').onclick = function(){
@@ -129,6 +169,19 @@ a.line{display:flex;align-items:center;justify-content:center;background:var(--a
     var b = this; b.disabled = true; b.textContent = '送出中…';
     post({ action: 'wedMemo', op: 'submit', no: no, k: k, pay: pay }).then(function(r){ if (!r || !r.ok) throw new Error((r && r.error) || '送出失敗'); done('ok'); })
       .catch(function(e){ $('err').textContent = e.message || '送出失敗，請再試一次'; b.disabled = false; b.textContent = '確認送出'; });
+  };
+  function paidDone(at){ $('paidForm').hidden = true; $('paidLead').hidden = true; $('paidOk').hidden = false; $('paidOk').textContent = '✓ 已收到你們的匯款資訊' + (at ? '（' + tm(at) + '）' : '') + '，對帳後就完成了，謝謝您！'; }
+  $('paidGo').onclick = function(){
+    var l5 = $('last5').value.replace(/\D/g, ''), f = $('shot').files[0]; $('paidErr').textContent = '';
+    if (l5 && l5.length !== 5){ $('paidErr').textContent = '後五碼請填 5 個數字'; return; }
+    if (!l5 && !f){ $('paidErr').textContent = '請填後五碼，或上傳轉帳截圖'; return; }
+    if (f && f.size > 9 * 1024 * 1024){ $('paidErr').textContent = '檔案太大（超過 9MB），請改用截圖'; return; }
+    if (DEMO) return paidDone(Date.now());
+    var b = this; b.disabled = true; b.textContent = '回傳中…';
+    var send = function(b64){ return post({ action: 'wedMemo', op: 'paid', no: no, k: k, last5: l5, mime: f ? f.type : '', b64: b64 || '' }); };
+    var p = f ? new Promise(function(res, rej){ var r = new FileReader(); r.onload = function(){ res(String(r.result).split(',')[1] || ''); }; r.onerror = rej; r.readAsDataURL(f); }).then(send) : send('');
+    p.then(function(r){ if (!r || !r.ok) throw new Error((r && r.error) || '回傳失敗'); paidDone(Date.now()); })
+      .catch(function(e){ $('paidErr').textContent = e.message || '回傳失敗，請再試一次'; b.disabled = false; b.textContent = '回傳匯款資訊'; });
   };
   $('fixOpen').onclick = function(){ var x = $('fixBox'); x.hidden = !x.hidden; if (!x.hidden) $('fixNote').focus(); };
   $('fixGo').onclick = function(){
