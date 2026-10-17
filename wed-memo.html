@@ -52,6 +52,10 @@ textarea{font:inherit;font-size:16px;width:100%;min-height:96px;border:1px solid
 .d-note{display:flex;gap:10px;color:var(--muted);font-size:15.5px;line-height:1.9;margin-top:14px}
 .d-note i{font-style:normal;font-size:13px;flex:none;line-height:2.2}
 a.line{display:flex;align-items:center;justify-content:center;gap:22px;background:var(--accent);color:var(--accent-ink);text-decoration:none;font-weight:600;letter-spacing:.08em;border-radius:6px;min-height:62px;margin-top:36px}
+.d-bank{text-align:left;margin-top:22px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px}
+.d-bank .lbl{font-size:15px;font-weight:600;letter-spacing:.04em;margin-bottom:8px}
+.d-bank pre{font:inherit;font-size:16px;line-height:1.8;white-space:pre-wrap;margin:0;color:var(--fg)}
+.d-bank button{font:inherit;font-size:14.5px;color:var(--accent);background:transparent;border:1px solid var(--accent);border-radius:6px;padding:6px 14px;margin-top:10px;cursor:pointer}
 .d-paid{text-align:left;margin-top:28px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px 16px;display:grid;gap:12px}
 .d-paid h3{font-size:16px;font-weight:600;margin:0;letter-spacing:.04em}
 .d-paid p{color:var(--muted);font-size:15px;margin:0}
@@ -115,6 +119,7 @@ a.line{display:flex;align-items:center;justify-content:center;gap:22px;backgroun
         <div class="d-row"><span id="dPay"></span><span id="dAmt"></span></div>
         <div class="d-note"><i aria-hidden="true">✉</i><span id="dText"></span></div>
       </div></div>
+    <div class="d-bank" id="dBank" hidden><div class="lbl">匯款帳戶</div><pre id="dBankTxt"></pre><button type="button" id="copyAcct">複製帳號</button></div>
     <div class="d-paid" id="dPaid" hidden>
       <h3>已經匯款了嗎？</h3>
       <p id="paidLead">匯款後請回傳匯款資訊，方便我們對帳，謝謝您 🙏</p>
@@ -158,7 +163,7 @@ a.line{display:flex;align-items:center;justify-content:center;gap:22px;backgroun
     var nt = 'NT$ ' + Math.round(+J.bal || 0).toLocaleString('en-US');
     if (J.mon){ $('dPay').textContent = '尾款・月結'; $('dAmt').textContent = ''; $('dText').textContent = '期待陪你們迎接美好的一天。'; }
     else if (pay === 'cash'){ $('dPay').textContent = '尾款・現金支付'; $('dAmt').textContent = nt; $('dText').textContent = '尾款與司機禮包可一起準備，當天交給車隊負責人即可，也可由親友轉交。'; }
-    else { $('dPay').textContent = '尾款・提前匯款'; $('dAmt').textContent = nt; $('dText').textContent = '請於用車前一天完成匯款；因會計無法即時對帳，請勿於用車當天匯款。'; $('dPaid').hidden = false; if (J.paid) paidDone(J.paid.at); }
+    else { $('dPay').textContent = '尾款・提前匯款'; $('dAmt').textContent = nt; $('dText').textContent = '請於用車前一天完成匯款；因會計無法即時對帳，請勿於用車當天匯款。'; $('dPaid').hidden = false; var bk = bankFrom(J.text); if (bk){ $('dBank').hidden = false; $('dBankTxt').textContent = bk; } if (J.paid) paidDone(J.paid.at); }
   }
   Array.prototype.forEach.call(document.querySelectorAll('.opt'), function(b){ b.onclick = function(){ setPay(b.dataset.pay); $('err').textContent = ''; }; });
   $('go').onclick = function(){
@@ -170,6 +175,12 @@ a.line{display:flex;align-items:center;justify-content:center;gap:22px;backgroun
     post({ action: 'wedMemo', op: 'submit', no: no, k: k, pay: pay }).then(function(r){ if (!r || !r.ok) throw new Error((r && r.error) || '送出失敗'); done('ok'); })
       .catch(function(e){ $('err').textContent = e.message || '送出失敗，請再試一次'; b.disabled = false; b.textContent = '確認送出'; });
   };
+  // 匯款帳戶：取確認單「匯款資訊」那一段（到「加時」為止）
+  function bankFrom(t){ var L = String(t || '').split('\n'), i = -1, out = []; for (var n = 0; n < L.length; n++){ if (/匯款資訊|transfer details|お振込先/i.test(L[n])){ i = n; } }
+    if (i < 0) return ''; for (var m = i + 1; m < L.length; m++){ if (/^(加時|Extra|延長)/.test(L[m].trim())) break; if (L[m].trim()) out.push(L[m].trim()); } return out.join('\n'); }
+  $('copyAcct').onclick = function(){ var t = $('dBankTxt').textContent, m = t.match(/帳號[：:\s]*([\d\-\s]{8,})/), v = m ? m[1].replace(/\D/g, '') : t, b = this;
+    var ok = function(){ b.textContent = '已複製 ✓'; setTimeout(function(){ b.textContent = '複製帳號'; }, 1800); };
+    if (navigator.clipboard) navigator.clipboard.writeText(v).then(ok, function(){ window.prompt('請複製帳號', v); }); else window.prompt('請複製帳號', v); };
   function paidDone(at){ $('paidForm').hidden = true; $('paidLead').hidden = true; $('paidOk').hidden = false; $('paidOk').textContent = '✓ 已收到你們的匯款資訊' + (at ? '（' + tm(at) + '）' : '') + '，對帳後就完成了，謝謝您！'; }
   $('paidGo').onclick = function(){
     var l5 = $('last5').value.replace(/\D/g, ''), f = $('shot').files[0]; $('paidErr').textContent = '';
@@ -193,7 +204,7 @@ a.line{display:flex;align-items:center;justify-content:center;gap:22px;backgroun
       .catch(function(e){ $('fixErr').textContent = e.message || '送出失敗，請再試一次'; b.disabled = false; });
   };
   if (DEMO) return show({ no: '20261025ML01', date: '2026-10-25', couple: '新郎 & 新娘', bal: 53500, mon: false, ok: null,
-    text: '好好禮車           訂單編號:20261025ML01\nWedding Day 2026/10/25（日）\n———————\n用車時間：08:15 - 11:15\n集合：07:55\n聯絡人：王小美 0912-xxx-xxx\n\n方案\nRolls-Royce Phantom 幻影 ×1、Tesla Model X ×5\n\n主禮車｜REA-xxxx｜司機｜Rolls-Royce Phantom 白色\n\nA. 男方家\n苗栗縣公館鄉仁安村仁安118-2號\nB. 女方家\n苗栗市文發路422巷16號\n\n付款：\n尾款 $53,500(含司機禮)\n(請勿當天用車結束才匯款，假日會計無法即時查帳)\n❤️匯款資訊：\n（範例）' });
+    text: '好好禮車           訂單編號:20261025ML01\nWedding Day 2026/10/25（日）\n———————\n用車時間：08:15 - 11:15\n集合：07:55\n聯絡人：王小美 0912-xxx-xxx\n\n方案\nRolls-Royce Phantom 幻影 ×1、Tesla Model X ×5\n\n主禮車｜REA-xxxx｜司機｜Rolls-Royce Phantom 白色\n\nA. 男方家\n苗栗縣公館鄉仁安村仁安118-2號\nB. 女方家\n苗栗市文發路422巷16號\n\n付款：\n尾款 $53,500(含司機禮)\n(請勿當天用車結束才匯款，假日會計無法即時查帳)\n❤️尾款匯款資訊（禮車幹部帳戶）：\n（範例）某某銀行（000）\n帳號：0000-0000-0000\n戶名：範例\n加時：MX $1,200/HR' });
   if (!no || !k) return bad('連結不完整，請回到 LINE 重新點一次按鈕。');
   post({ action: 'wedMemo', op: 'load', no: no, k: k }).then(function(j){ if (!j || !j.ok) throw new Error((j && j.error) || '讀取失敗'); show(j); })
     .catch(function(e){ bad(e.message || '讀取失敗，請回到 LINE 告訴我們。'); });
