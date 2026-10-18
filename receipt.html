@@ -131,7 +131,7 @@ html,body{margin:0;background:var(--bg);color:var(--fg);font-family:"Noto Sans T
     p.then(function(){
       var el = $('receiptCard'), rc = el.getBoundingClientRect();
       return window.html2canvas(el, { scale: 2, backgroundColor: '#ffffff' }).then(function(cv){
-        var mm = 25.4 / 96, w = rc.width * mm, h = rc.height * mm, doc = new window.jspdf.jsPDF({ orientation: w > h ? 'l' : 'p', unit: 'mm', format: [w, h] });
+        var mm = 25.4 / 96, w = rc.width * mm, h = w * cv.height / cv.width,   /* 2026-10-18 高度照截圖比例算，避免收據被拉長變形 */ doc = new window.jspdf.jsPDF({ orientation: w > h ? 'l' : 'p', unit: 'mm', format: [w, h] });
         doc.addImage(cv.toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, w, h);
         var name = (lang === 'en' ? 'Receipt_' : lang === 'ja' ? '領収書_' : '收據_') + data.no + '.pdf';
         var blob = doc.output('blob'), file = null; try { file = new File([blob], name, { type: 'application/pdf' }); } catch (e) {}
