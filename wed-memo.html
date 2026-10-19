@@ -68,6 +68,16 @@ a.line{display:flex;align-items:center;justify-content:center;gap:22px;backgroun
 .prev{font-size:14.5px;color:var(--muted);text-align:center;margin-top:10px}
 /* iPhone Duo 打開（寬螢幕）：左邊確認單、右邊付款與確認 */
 @media (min-width:720px){.wrap{max-width:1000px;padding:28px 24px 40px}.grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:22px;align-items:start}.side{position:sticky;top:16px}}
+.lb{position:fixed;inset:0;z-index:50;background:rgba(30,24,18,.55);display:flex;align-items:center;justify-content:center;padding:16px}
+.lb[hidden]{display:none}
+.lb-box{background:var(--surface,#fff);border-radius:16px;max-width:560px;width:100%;max-height:88vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.25)}
+.lb-hd{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;font-weight:600;border-bottom:1px solid rgba(0,0,0,.08)}
+.lb-x{border:0;background:none;font-size:22px;line-height:1;cursor:pointer;color:inherit;padding:4px 8px}
+.lb-img{flex:1;min-height:0;overflow:auto;display:flex;align-items:flex-start;justify-content:center;background:#f4f1ec}
+.lb-img img{max-width:100%;height:auto;display:block}
+.lb-ft{display:flex;gap:8px;justify-content:flex-end;padding:10px 14px;border-top:1px solid rgba(0,0,0,.08)}
+.lb-ft a{font-size:14px;padding:8px 14px;border-radius:999px;text-decoration:none;border:1px solid #8a6d43;color:#8a6d43}
+.lb-ft a.pri{background:#8a6d43;color:#fff}
 </style>
 </head>
 <body>
@@ -153,7 +163,7 @@ a.line{display:flex;align-items:center;justify-content:center;gap:22px;backgroun
     $('head').textContent = '訂單編號：' + j.no + (j.date ? '｜用車日期：' + md(j.date) : '') + (j.couple ? '\n' + j.couple : '');
     // 2026-10-19 參考資料不顯示檔名和網址：「參考資料 1 https://…」變成可點的「參考資料 1」
     var esc = function(v){ return String(v).replace(/[&<>"']/g, function(ch){ return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]; }); };
-    $('memo').innerHTML = esc(j.text || '').replace(/(參考資料|Reference|参考資料) ?(\d+) (https:\/\/(?:drive|docs)\.google\.com\/[^\s<、，,]+)/g, function(_, w, n, u){ return '<a href="' + u + '" target="_blank" rel="noopener" style="color:#8a6d43;text-decoration:underline">' + w + ' ' + n + '</a>'; });
+    $('memo').innerHTML = esc(j.text || '').replace(/(參考資料|Reference|参考資料) ?(\d+) (https:\/\/(?:drive|docs)\.google\.com\/[^\s<、，,]+)/g, function(_, w, n, u){ var m = u.match(/\/d\/([\w-]{20,})/) || u.match(/[?&]id=([\w-]{20,})/); return '<a href="' + u + '" target="_blank" rel="noopener"' + (m ? ' data-fid="' + m[1] + '" data-ttl="' + w + ' ' + n + '"' : '') + ' style="color:#8a6d43;text-decoration:underline">' + w + ' ' + n + '</a>'; });
     if (j.mon) $('payBox').hidden = true;
     $('amtCash').textContent = '金額 ' + money(j.bal) + '（尾款及司機禮）'; $('amtXfer').textContent = '金額 ' + money(j.bal);
     var C = ('conf' in j) ? j.conf : (j.ok && typeof j.ok === 'object' ? j.ok : null);   // 2026-10-19 客人確認紀錄改放 conf（ok 只代表讀取成功）
@@ -253,6 +263,27 @@ a.line{display:flex;align-items:center;justify-content:center;gap:22px;backgroun
       var t = sp(s); if (s && t !== s && e.clipboardData){ e.clipboardData.setData('text/plain', t); e.preventDefault(); }
     } catch (x) {}
   }, true);
+})();
+</script>
+<div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-labelledby="lbT"><div class="lb-box"><div class="lb-hd"><span id="lbT">參考資料</span><button class="lb-x" id="lbX" aria-label="關閉">×</button></div><div class="lb-img"><img id="lbImg" alt="參考資料預覽"></div><div class="lb-ft"><a id="lbOpen" target="_blank" rel="noopener">開啟原檔</a><a id="lbDl" class="pri" target="_blank" rel="noopener">下載</a></div></div></div>
+<script>
+/* 2026-10-19 Nicole：參考資料點了在原畫面上用小視窗預覽（背景半透明），可下載，不跳到別的視窗 */
+(function(){
+  var lb = document.getElementById('lb'), img = document.getElementById('lbImg');
+  function close(){ lb.hidden = true; img.removeAttribute('src'); }
+  document.addEventListener('click', function(e){
+    var a = e.target.closest && e.target.closest('a[data-fid]'); if (!a) return;
+    e.preventDefault(); var id = a.getAttribute('data-fid');
+    document.getElementById('lbT').textContent = a.getAttribute('data-ttl') || '參考資料';
+    img.src = 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(id) + '&sz=w1600';
+    img.onerror = function(){ window.open(a.href, '_blank', 'noopener'); close(); };   // 預覽不出來（例：特殊格式）就開原檔
+    document.getElementById('lbOpen').href = a.href;
+    document.getElementById('lbDl').href = 'https://drive.google.com/uc?export=download&id=' + encodeURIComponent(id);
+    lb.hidden = false;
+  });
+  document.getElementById('lbX').addEventListener('click', close);
+  lb.addEventListener('click', function(e){ if (e.target === lb) close(); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && !lb.hidden) close(); });
 })();
 </script>
 </body>
