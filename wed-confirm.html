@@ -177,6 +177,21 @@ button.go:disabled{opacity:.6}
     </div>
     <div class="field"><label class="q">女方是否有準備甘蔗、竹子<b>*</b></label>
       <div class="chips" data-pick="cane"><button type="button" class="chip">有</button><button type="button" class="chip">沒有</button><button type="button" class="chip">還不確定</button></div></div>
+    <!-- 2026-10-20 Nicole：鞭炮（哪個點放、實體或環保）＋儀式老師／主持人 -->
+    <div class="field"><label class="q">是否施放鞭炮<b>*</b></label><div class="help">禮車抵達時要放鞭炮的話，請選擇在哪個點放。</div>
+      <div class="chips" data-pick="fireYN"><button type="button" class="chip">要放</button><button type="button" class="chip">不放</button></div></div>
+    <div id="fireBox" hidden>
+      <div class="field"><label class="q">在哪裡放（可複選）<b>*</b></label><div class="chips" id="firePts"></div></div>
+      <div class="field"><label class="q">鞭炮種類<b>*</b></label>
+        <div class="chips" data-pick="fireType"><button type="button" class="chip">實體鞭炮</button><button type="button" class="chip">環保鞭炮（電子音響炮聲替代）</button></div></div>
+      <div class="note-tip" id="fireTip" hidden style="white-space:pre-line"></div>
+    </div>
+    <div class="field"><label class="q">是否有專業儀式引導老師或主持人<small>選填</small></label><div class="help">有的話留下名稱和電話，司機當天可以跟老師配合流程。</div>
+      <div class="chips" data-pick="host"><button type="button" class="chip">有</button><button type="button" class="chip">沒有</button></div></div>
+    <div class="row2" id="hostBox" hidden>
+      <div class="field"><label class="q" for="hostName">老師／主持人名稱<small>選填</small></label><input id="hostName" maxlength="40"></div>
+      <div class="field"><label class="q" for="hostPhone">電話<small>選填</small></label><input id="hostPhone" type="tel" inputmode="tel" maxlength="20"></div>
+    </div>
     <div class="field"><label class="q">上傳行程表或指定路線圖<small>選填</small></label><div class="help">有排好的當天流程表、或想走的路線截圖，可以上傳給司機參考（照片或 PDF，最多 6 個）。</div>
       <div class="ups" id="ups"></div>
       <input type="file" id="upIn" accept="image/*,application/pdf" multiple hidden>
@@ -219,8 +234,31 @@ button.go:disabled{opacity:.6}
     $('restBox').hidden = loop || pick.restYN !== '需要'; $('loop2Box').hidden = !loop || pick.loop2YN !== '是';
     $('frBox').hidden = pick.friend !== '有';
     if (key === 'friendN' || key === 'friend') renderFr();
+    $('hostBox').hidden = pick.host !== '有';
+    fireUi();
     hoursTip();
   }
+  // 2026-10-20 鞭炮：依行程列出抵達的點（可複選），再選實體／環保；飯店要照飯店規定的地點放，實體鞭炮提醒注意事項
+  var firePick = [];
+  function firePts(){
+    if (pick.mode === '單點繞圈') return [['A', '繞圈回到 A 點放炮', $('meet').value]];
+    var L = [['B', '抵達 B 點（女方家）放炮', $('wed').value], ['A', '迎娶回 A 點（男方家）放炮', $('meet').value]];
+    if (pick.restYN === '需要') L.push(['C', '抵達 C 點（餐廳）放炮', $('restAddr').value]);
+    return L;
+  }
+  function fireUi(){
+    var on = pick.fireYN === '要放', P = firePts(), ks = P.map(function(z){ return z[0]; });
+    $('fireBox').hidden = !on;
+    firePick = firePick.filter(function(v){ return ks.indexOf(v) >= 0; });
+    var g = $('firePts'); g.innerHTML = '';
+    P.forEach(function(z){ var b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.textContent = z[1]; b.setAttribute('aria-pressed', firePick.indexOf(z[0]) >= 0 ? 'true' : 'false');
+      b.onclick = function(){ var i = firePick.indexOf(z[0]); if (i >= 0) firePick.splice(i, 1); else firePick.push(z[0]); g.classList.remove('bad'); fireUi(); }; g.appendChild(b); });
+    var T = [], hotel = P.filter(function(z){ return firePick.indexOf(z[0]) >= 0 && /飯店|酒店|旅館|會館|行館|渡假|度假|宴會|hotel|resort/i.test(z[2] || ''); });
+    if (on && hotel.length) T.push('施放地點是飯店／會館，請依照飯店要求的地點施放。');
+    if (on && /實體/.test(pick.fireType || '')) T.push('鞭炮注意事項：不可以從車上丟出鞭炮，請下車到定點施放，並與人、車保持距離。');
+    $('fireTip').hidden = !T.length; $('fireTip').textContent = T.join('\n');
+  }
+  ['meet', 'wed', 'restAddr'].forEach(function(id){ $(id).addEventListener('input', fireUi); });
   function frN(){ return pick.friend === '有' ? (parseInt(pick.friendN, 10) || 0) : 0; }
   function renderFr(){
     var n = frN(), T = (CARN || 0) + n, box = $('frPos');
@@ -266,10 +304,11 @@ button.go:disabled{opacity:.6}
       (j.cars ? '<div><span class="k">禮車</span>' + esc(j.cars) + '</div>' : '') +
       (PLAN ? '<div><span class="k">方案</span>' + PLAN + ' 小時</div>' : '');
     var p = j.pre || {};
-    ['name', 'phone', 'meet', 'wed', 'start', 'back', 'restT', 'restAddr', 'loop1', 'loop2T', 'note'].forEach(function(id){ if (p[id]) $(id).value = p[id]; });
+    ['name', 'phone', 'meet', 'wed', 'start', 'back', 'restT', 'restAddr', 'loop1', 'loop2T', 'note', 'hostName', 'hostPhone'].forEach(function(id){ if (p[id]) $(id).value = p[id]; });
     setPick('mode', p.mode === 'loop' ? '單點繞圈' : '迎娶（男方家 ⇄ 女方家）'); setPick('combo', p.combo); setPick('restYN', p.restYN); setPick('loop2YN', p.loop2YN); setPick('cane', p.cane);
     if (p.friendPos) frPos = String(p.friendPos).split(',').map(function(v){ return parseInt(v, 10) || 0; });
     setPick('friend', p.friend); setPick('friendN', p.friendN ? p.friendN + ' 台' : '');
+    firePick = String(p.fire || '').split(',').filter(String); setPick('fireType', p.fireType); setPick('fireYN', p.fireYN); setPick('host', p.host);
     if (j.doneAt){ var t = new Date(j.doneAt), tt = (t.getMonth() + 1) + '/' + t.getDate() + ' ' + ('0' + t.getHours()).slice(-2) + ':' + ('0' + t.getMinutes()).slice(-2); $('again').hidden = false; $('again').textContent = j.doneWho === 'agent' ? '婚顧／主持人已在 ' + tt + ' 幫忙代填；下面是代填的內容，請再確認一次，有不同直接修改後送出。' : '在 ' + tt + ' 已經送出過；下面是上次的內容，有要修改再送出一次即可。'; $('go').textContent = '更新送出'; }
     $('loading').hidden = true; $('f').hidden = false; hoursTip();
   }
@@ -278,9 +317,13 @@ button.go:disabled{opacity:.6}
     e.preventDefault(); var miss = [];
     var loop = pick.mode === '單點繞圈';
     Array.prototype.forEach.call(document.querySelectorAll('[data-req]'), function(el){ if (el.closest('[hidden]')){ el.classList.remove('bad'); return; } var ok = !!el.value.trim(); el.classList.toggle('bad', !ok); if (!ok) miss.push(el); });
-    (loop ? ['who', 'combo', 'loop2YN', 'friend', 'cane'] : ['who', 'combo', 'restYN', 'friend', 'cane']).forEach(function(kk){ var g = document.querySelector('[data-pick="' + kk + '"]'); var ok = !!pick[kk]; g.classList.toggle('bad', !ok); if (!ok) miss.push(g); });
+    (loop ? ['who', 'combo', 'loop2YN', 'friend', 'cane', 'fireYN'] : ['who', 'combo', 'restYN', 'friend', 'cane', 'fireYN']).forEach(function(kk){ var g = document.querySelector('[data-pick="' + kk + '"]'); var ok = !!pick[kk]; g.classList.toggle('bad', !ok); if (!ok) miss.push(g); });
     if (loop && pick.loop2YN === '是' && !$('loop2T').value){ $('loop2T').classList.add('bad'); miss.push($('loop2T')); }
     if (!loop && pick.restYN === '需要') ['restT', 'restAddr'].forEach(function(id){ var el = $(id), ok = !!el.value.trim(); el.classList.toggle('bad', !ok); if (!ok) miss.push(el); });
+    if (pick.fireYN === '要放'){
+      if (!firePick.length){ $('firePts').classList.add('bad'); miss.push($('firePts')); }
+      var gT = document.querySelector('[data-pick="fireType"]'); gT.classList.toggle('bad', !pick.fireType); if (!pick.fireType) miss.push(gT);
+    }
     if (pick.friend === '有'){
       var gN = document.querySelector('[data-pick="friendN"]'); gN.classList.toggle('bad', !frN()); if (!frN()) miss.push(gN);
       Array.prototype.forEach.call(document.querySelectorAll('[data-fr]'), function(r){ var ok = !!frPos[+r.getAttribute('data-fr')]; r.classList.toggle('bad', !ok); if (!ok) miss.push(r); });
@@ -290,6 +333,9 @@ button.go:disabled{opacity:.6}
     var f = loop ? { mode: 'loop', name: $('name').value.trim(), phone: $('phone').value.trim(), meet: $('meet').value.trim(), combo: pick.combo, loop1: $('loop1').value, loop2YN: pick.loop2YN, loop2T: pick.loop2YN === '是' ? $('loop2T').value : '', cane: pick.cane, friend: pick.friend, friendN: frN() ? String(frN()) : '', friendPos: frN() ? frPos.slice(0, frN()).join(',') : '', note: $('note').value.trim() }
       : { mode: '', name: $('name').value.trim(), phone: $('phone').value.trim(), meet: $('meet').value.trim(), wed: $('wed').value.trim(), start: $('start').value, back: $('back').value,
       combo: pick.combo, restYN: pick.restYN, restT: pick.restYN === '需要' ? $('restT').value : '', restAddr: pick.restYN === '需要' ? $('restAddr').value.trim() : '', cane: pick.cane, friend: pick.friend, friendN: frN() ? String(frN()) : '', friendPos: frN() ? frPos.slice(0, frN()).join(',') : '', note: $('note').value.trim() };
+    var fire = pick.fireYN === '要放', ord = firePts().map(function(z){ return z[0]; });
+    f.fireYN = pick.fireYN || ''; f.fire = fire ? ord.filter(function(v){ return firePick.indexOf(v) >= 0; }).join(',') : ''; f.fireType = fire ? (pick.fireType || '') : '';
+    f.host = pick.host || ''; f.hostName = pick.host === '有' ? $('hostName').value.trim() : ''; f.hostPhone = pick.host === '有' ? $('hostPhone').value.trim() : '';
     $('err').textContent = '';
     if (ups.some(function(u){ return u.busy; })){ $('err').textContent = '檔案還在上傳，請稍等一下再送出'; return; }
     if (PREVIEW){ done(); return; }
