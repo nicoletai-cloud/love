@@ -151,7 +151,7 @@ a.line{display:flex;align-items:center;justify-content:center;gap:22px;backgroun
 (function(){
   var BOT = 'https://script.google.com/macros/s/AKfycbwoKk13j5YOtkA5cTh3FtvECekYm0uMBPsid1H--kB7bhUVpDFvSnSA0iTzCfc8IT11_Q/exec';
   var $ = function(id){ return document.getElementById(id); };
-  var Q = new URLSearchParams(location.search), no = (Q.get('no') || '').trim(), k = (Q.get('k') || '').trim(), DEMO = Q.get('demo') === '1';
+  var Q = new URLSearchParams(location.search), no = (Q.get('no') || '').trim(), k = (Q.get('k') || '').trim(), v = (Q.get('v') || '').trim(), DEMO = Q.get('demo') === '1';
   var J = null, pay = '';
   function post(body){ return fetch(BOT, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body) }).then(function(r){ return r.json(); }); }
   function money(n){ return '$' + Math.round(+n || 0).toLocaleString('en-US'); }
@@ -189,7 +189,7 @@ a.line{display:flex;align-items:center;justify-content:center;gap:22px;backgroun
     if (!$('okChk').checked){ $('err').textContent = '請先核對內容，並勾選「皆正確無誤」'; return; }
     if (DEMO) return done('ok');
     var b = this; b.disabled = true; b.textContent = '送出中…';
-    post({ action: 'wedMemo', op: 'submit', no: no, k: k, pay: pay }).then(function(r){ if (!r || !r.ok) throw new Error((r && r.error) || '送出失敗'); done('ok'); })
+    post({ action: 'wedMemo', op: 'submit', no: no, k: k, v: v, pay: pay }).then(function(r){ if (!r || !r.ok) throw new Error((r && r.error) || '送出失敗'); done('ok'); })
       .catch(function(e){ $('err').textContent = e.message || '送出失敗，請再試一次'; b.disabled = false; b.textContent = '確認送出'; });
   };
   // 匯款帳戶：取確認單「匯款資訊」那一段（到「加時」為止）
@@ -206,7 +206,7 @@ a.line{display:flex;align-items:center;justify-content:center;gap:22px;backgroun
     if (f && f.size > 9 * 1024 * 1024){ $('paidErr').textContent = '檔案太大（超過 9MB），請改用截圖'; return; }
     if (DEMO) return paidDone(Date.now());
     var b = this; b.disabled = true; b.textContent = '回傳中…';
-    var send = function(b64){ return post({ action: 'wedMemo', op: 'paid', no: no, k: k, last5: l5, mime: f ? f.type : '', b64: b64 || '' }); };
+    var send = function(b64){ return post({ action: 'wedMemo', op: 'paid', no: no, k: k, v: v, last5: l5, mime: f ? f.type : '', b64: b64 || '' }); };
     var p = f ? new Promise(function(res, rej){ var r = new FileReader(); r.onload = function(){ res(String(r.result).split(',')[1] || ''); }; r.onerror = rej; r.readAsDataURL(f); }).then(send) : send('');
     p.then(function(r){ if (!r || !r.ok) throw new Error((r && r.error) || '回傳失敗'); paidDone(Date.now()); })
       .catch(function(e){ $('paidErr').textContent = e.message || '回傳失敗，請再試一次'; b.disabled = false; b.textContent = '回傳匯款資訊'; });
@@ -217,13 +217,13 @@ a.line{display:flex;align-items:center;justify-content:center;gap:22px;backgroun
     if (!note){ $('fixErr').textContent = '請寫下要修改的地方'; return; }
     if (DEMO) return done('fix');
     var b = this; b.disabled = true;
-    post({ action: 'wedMemo', op: 'fix', no: no, k: k, note: note }).then(function(r){ if (!r || !r.ok) throw new Error((r && r.error) || '送出失敗'); done('fix'); })
+    post({ action: 'wedMemo', op: 'fix', no: no, k: k, v: v, note: note }).then(function(r){ if (!r || !r.ok) throw new Error((r && r.error) || '送出失敗'); done('fix'); })
       .catch(function(e){ $('fixErr').textContent = e.message || '送出失敗，請再試一次'; b.disabled = false; });
   };
   if (DEMO) return show({ no: '20261025ML01', date: '2026-10-25', couple: '新郎 & 新娘', bal: 53500, mon: false, ok: null,
     text: '好好禮車           訂單編號:20261025ML01\nWedding Day 2026/10/25（日）\n———————\n用車時間：08:15 - 11:15\n集合：07:55\n聯絡人：王小美 0912-xxx-xxx\n\n方案\nRolls-Royce Phantom 幻影 ×1、Tesla Model X ×5\n\n主禮車｜REA-xxxx｜司機｜Rolls-Royce Phantom 白色\n\nA. 男方家\n苗栗縣公館鄉仁安村仁安118-2號\nB. 女方家\n苗栗市文發路422巷16號\n\n付款：\n尾款 $53,500(含司機禮)\n(請勿當天用車結束才匯款，假日會計無法即時查帳)\n❤️尾款匯款資訊（禮車幹部帳戶）：\n（範例）某某銀行（000）\n帳號：0000-0000-0000\n戶名：範例\n加時：MX $1,200/HR' });
   if (!no || !k) return bad('連結不完整，請回到 LINE 重新點一次按鈕。');
-  post({ action: 'wedMemo', op: 'load', no: no, k: k }).then(function(j){ if (!j || !j.ok) throw new Error((j && j.error) || '讀取失敗'); show(j); })
+  post({ action: 'wedMemo', op: 'load', no: no, k: k, v: v }).then(function(j){ if (!j || !j.ok) throw new Error((j && j.error) || '讀取失敗'); show(j); })
     .catch(function(e){ bad(e.message || '讀取失敗，請回到 LINE 告訴我們。'); });
 })();
 </script>
