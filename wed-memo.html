@@ -154,8 +154,9 @@ a.line{display:flex;align-items:center;justify-content:center;gap:22px;backgroun
     $('memo').textContent = j.text || '';
     if (j.mon) $('payBox').hidden = true;
     $('amtCash').textContent = '金額 ' + money(j.bal) + '（尾款及司機禮）'; $('amtXfer').textContent = '金額 ' + money(j.bal);
-    if (j.ok && j.ok.pay === 'transfer' && !(j.fix && j.fix.at > j.ok.at)){ setPay('transfer'); return done('ok'); }
-    if (j.ok){ setPay(j.ok.pay === 'none' ? '' : j.ok.pay); $('okChk').checked = true; $('prevOk').hidden = false; $('prevOk').textContent = '你已於 ' + tm(j.ok.at) + ' 確認過（' + payTxt(j.ok.pay, j.bal) + '），如需更改付款方式可以重新送出。'; }
+    var C = ('conf' in j) ? j.conf : (j.ok && typeof j.ok === 'object' ? j.ok : null);   // 2026-10-19 客人確認紀錄改放 conf（ok 只代表讀取成功）
+    if (C && C.pay === 'transfer' && !(j.fix && j.fix.at > C.at)){ setPay('transfer'); return done('ok'); }
+    if (C){ setPay(C.pay === 'none' ? '' : C.pay); $('okChk').checked = true; $('prevOk').hidden = false; $('prevOk').textContent = '你已於 ' + tm(C.at) + ' 確認過（' + payTxt(C.pay, j.bal) + '），如需更改付款方式可以重新送出。'; }
   }
   function done(kind){
     $('main').hidden = true; $('top').hidden = true; $('done').hidden = false; window.scrollTo(0, 0);
