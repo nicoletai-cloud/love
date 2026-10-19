@@ -6,7 +6,7 @@
 <title>禮車服務確認單｜好好禮車</title>
 <meta name="robots" content="noindex">
 <meta property="og:title" content="禮車服務確認單｜好好禮車">
-<meta property="og:description" content="請核對婚禮用車內容，並選擇尾款付款方式。">
+<meta property="og:description" content="好好禮車婚禮用車內容：車隊、司機、地點與禮車流程。">
 <style>
 :root{--bg:#f8f5f0;--surface:#fff;--fg:#2f2a24;--muted:#7a7066;--line:#e4dbce;--accent:#8a6d43;--accent-ink:#fff;--soft:#f3ece2;--warn:#b4532a;--warn-soft:#fbeee6;--ok:#2f7d4f;--ok-soft:#e8f4ec}
 @media (prefers-color-scheme:dark){:root{--bg:#1d1a17;--surface:#26221e;--fg:#f1ebe3;--muted:#b3a899;--line:#3b352e;--accent:#c9a46b;--accent-ink:#1d1a17;--soft:#2e2924;--warn:#f0a07a;--warn-soft:#3a2a22;--ok:#7fc79a;--ok-soft:#1f3328}}
@@ -65,6 +65,9 @@ a.line{display:flex;align-items:center;justify-content:center;gap:22px;backgroun
 .d-paid .go{border-radius:6px;min-height:52px;font-weight:600;letter-spacing:.06em}
 .d-paid .okmsg{color:#6d7f5e;font-size:15.5px}
 .d-foot{color:var(--muted);font-size:14px;letter-spacing:.1em;margin-top:56px}
+.okbadge{display:inline-block;background:var(--ok-soft);color:var(--ok);border-radius:999px;padding:4px 14px;font-size:14.5px;margin:0 0 12px}
+.shbtn{display:flex;align-items:center;justify-content:center;text-decoration:none;margin-top:16px}
+#share .memo{margin:0}
 .prev{font-size:14.5px;color:var(--muted);text-align:center;margin-top:10px}
 /* iPhone Duo 打開（寬螢幕）：左邊確認單、右邊付款與確認 */
 @media (min-width:720px){.wrap{max-width:1000px;padding:28px 24px 40px}.grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:22px;align-items:start}.side{position:sticky;top:16px}}
@@ -88,6 +91,14 @@ a.line{display:flex;align-items:center;justify-content:center;gap:22px;backgroun
   <h1>禮車服務確認單</h1></div>
   <div id="loading" class="load">讀取確認單中…</div>
   <div id="bad" class="load" hidden></div>
+  <!-- 2026-10-20 轉發版：主持人、家人、工作人員看的正式用車確認單（不含款項） -->
+  <div id="share" hidden>
+    <p class="lead" id="shHead"></p>
+    <div class="okbadge" id="shOk"></div>
+    <div class="memo" id="shMemo"></div>
+    <a class="ghost shbtn" id="shLine" target="_blank" rel="noopener">分享給 LINE 好友</a>
+    <p class="prev">如有任何問題，請與新人或禮車負責人聯繫。</p>
+  </div>
 
   <div id="main" hidden>
     <p class="lead" id="head"></p>
@@ -143,6 +154,7 @@ a.line{display:flex;align-items:center;justify-content:center;gap:22px;backgroun
       </div>
       <div class="okmsg" id="paidOk" hidden></div>
     </div>
+    <a class="ghost shbtn" id="dCard" hidden target="_blank" rel="noopener">查看正式用車確認單（含司機聯絡方式）</a>
     <a class="line" href="https://line.me/R/ti/p/@niceweddingcar">完成，返回 LINE<span aria-hidden="true">↗</span></a>
     <div class="d-foot">好好禮車 · 好好陪伴每一段幸福</div>
   </div>
@@ -151,7 +163,7 @@ a.line{display:flex;align-items:center;justify-content:center;gap:22px;backgroun
 (function(){
   var BOT = 'https://script.google.com/macros/s/AKfycbwoKk13j5YOtkA5cTh3FtvECekYm0uMBPsid1H--kB7bhUVpDFvSnSA0iTzCfc8IT11_Q/exec';
   var $ = function(id){ return document.getElementById(id); };
-  var Q = new URLSearchParams(location.search), no = (Q.get('no') || '').trim(), k = (Q.get('k') || '').trim(), v = (Q.get('v') || '').trim(), DEMO = Q.get('demo') === '1';
+  var Q = new URLSearchParams(location.search), no = (Q.get('no') || '').trim(), k = (Q.get('k') || '').trim(), v = (Q.get('v') || '').trim(), sk = (Q.get('s') || '').trim(), DEMO = Q.get('demo') === '1';
   var J = null, pay = '';
   function post(body){ return fetch(BOT, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body) }).then(function(r){ return r.json(); }); }
   function money(n){ return '$' + Math.round(+n || 0).toLocaleString('en-US'); }
@@ -177,6 +189,7 @@ a.line{display:flex;align-items:center;justify-content:center;gap:22px;backgroun
   function done(kind){
     $('main').hidden = true; $('top').hidden = true; $('done').hidden = false; window.scrollTo(0, 0);
     if (kind === 'fix'){ $('dTitle').textContent = '已收到修改需求'; $('dSub').textContent = '我們會儘快更新確認單，\n再傳給你們核對一次。'; $('dTips').hidden = true; return; }
+    if (J.share){ $('dCard').hidden = false; $('dCard').href = J.share; }   // 2026-10-20 確認後才看得到司機聯絡方式
     var nt = 'NT$ ' + Math.round(+J.bal || 0).toLocaleString('en-US');
     if (J.mon){ $('dPay').textContent = '尾款・月結'; $('dAmt').textContent = ''; $('dText').textContent = '期待陪你們迎接美好的一天。'; }
     else if (pay === 'cash'){ $('dPay').textContent = '尾款・現金支付'; $('dAmt').textContent = nt; $('dText').textContent = '尾款與司機禮包可一起準備，當天交給車隊負責人即可，也可由親友轉交。'; }
@@ -189,7 +202,7 @@ a.line{display:flex;align-items:center;justify-content:center;gap:22px;backgroun
     if (!$('okChk').checked){ $('err').textContent = '請先核對內容，並勾選「皆正確無誤」'; return; }
     if (DEMO) return done('ok');
     var b = this; b.disabled = true; b.textContent = '送出中…';
-    post({ action: 'wedMemo', op: 'submit', no: no, k: k, v: v, pay: pay }).then(function(r){ if (!r || !r.ok) throw new Error((r && r.error) || '送出失敗'); done('ok'); })
+    post({ action: 'wedMemo', op: 'submit', no: no, k: k, v: v, pay: pay }).then(function(r){ if (!r || !r.ok) throw new Error((r && r.error) || '送出失敗'); if (r.share) J.share = r.share; done('ok'); })
       .catch(function(e){ $('err').textContent = e.message || '送出失敗，請再試一次'; b.disabled = false; b.textContent = '確認送出'; });
   };
   // 匯款帳戶：取確認單「匯款資訊」那一段（到「加時」為止）
@@ -222,6 +235,19 @@ a.line{display:flex;align-items:center;justify-content:center;gap:22px;backgroun
   };
   if (DEMO) return show({ no: '20261025ML01', date: '2026-10-25', couple: '新郎 & 新娘', bal: 53500, mon: false, ok: null,
     text: '好好禮車           訂單編號:20261025ML01\nWedding Day 2026/10/25（日）\n———————\n用車時間：08:15 - 11:15\n集合：07:55\n聯絡人：王小美 0912-xxx-xxx\n\n方案\nRolls-Royce Phantom 幻影 ×1、Tesla Model X ×5\n\n主禮車｜REA-xxxx｜司機｜Rolls-Royce Phantom 白色\n\nA. 男方家\n苗栗縣公館鄉仁安村仁安118-2號\nB. 女方家\n苗栗市文發路422巷16號\n\n付款：\n尾款 $53,500(含司機禮)\n(請勿當天用車結束才匯款，假日會計無法即時查帳)\n❤️尾款匯款資訊（禮車幹部帳戶）：\n（範例）某某銀行（000）\n帳號：0000-0000-0000\n戶名：範例\n加時：MX $1,200/HR' });
+  if (no && sk){
+    document.querySelector('h1').textContent = '用車確認單'; document.title = '用車確認單｜好好禮車';
+    return post({ action: 'wedMemo', op: 'share', no: no, s: sk }).then(function(j){ if (!j || !j.ok) throw new Error((j && j.error) || '讀取失敗');
+      $('loading').hidden = true; $('share').hidden = false;
+      $('shHead').textContent = '訂單編號：' + j.no + (j.date ? '｜用車日期：' + md(j.date) : '') + (j.couple ? '\n' + j.couple : '');
+      $('shOk').textContent = j.upd ? '內容更新中，以下是 ' + (j.at ? tm(j.at) : '上次') + ' 確認的版本' : '✓ 新人已確認' + (j.at ? '（' + tm(j.at) + '）' : '');
+      var esc = function(t){ return String(t).replace(/[&<>"']/g, function(ch){ return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]; }); };
+      $('shMemo').innerHTML = esc(j.text || '').replace(/(參考資料|Reference|参考資料) ?(\d+) (https:\/\/(?:drive|docs)\.google\.com\/[^\s<、，,]+)/g, function(_, w, n, u){ var m = u.match(/\/d\/([\w-]{20,})/) || u.match(/[?&]id=([\w-]{20,})/); if (!m) return '<a href="' + u + '" target="_blank" rel="noopener" style="color:#8a6d43;text-decoration:underline">' + w + ' ' + n + '</a>';
+        return '<a class="th" href="' + u + '" target="_blank" rel="noopener" data-fid="' + m[1] + '" data-ttl="' + w + ' ' + n + '"><img src="https://drive.google.com/thumbnail?id=' + m[1] + '&amp;sz=w300" alt="' + w + ' ' + n + '" loading="lazy" onerror="this.remove()"><span>' + w + ' ' + n + '</span></a>'; })
+        .replace(/(<\/a>)、(?=<a class="th")/g, '$1');
+      $('shLine').href = 'https://line.me/R/share?text=' + encodeURIComponent('好好禮車｜用車確認單' + (j.date ? '（' + md(j.date) + '）' : '') + '\n' + location.href);
+    }).catch(function(e){ bad(e.message || '讀取失敗，請向新人索取最新的連結。'); });
+  }
   if (!no || !k) return bad('連結不完整，請回到 LINE 重新點一次按鈕。');
   post({ action: 'wedMemo', op: 'load', no: no, k: k, v: v }).then(function(j){ if (!j || !j.ok) throw new Error((j && j.error) || '讀取失敗'); show(j); })
     .catch(function(e){ bad(e.message || '讀取失敗，請回到 LINE 告訴我們。'); });
