@@ -131,6 +131,7 @@ a.line{display:flex;align-items:center;justify-content:center;gap:22px;backgroun
       var hd = n <= 2 ? ['車序', '車款'] : n <= 5 ? ['車序', '司機', '車號／車款'] : ['車序', '司機', '車號／車款', '緊急聯絡'];
     out.push('<table class="ft"><thead><tr>' + hd.map(function(x){ return '<th>' + x + '</th>'; }).join('') + '</tr></thead><tbody>' + rows.map(function(r){
       if (n <= 2) return '<tr><td class="nw">' + r[0] + '</td><td>' + (r[1] || '') + '</td></tr>';
+      if (r.length <= 2) return '<tr><td class="nw">' + r[0] + '</td><td colspan="' + (n <= 5 ? 2 : 3) + '">' + (r[1] || '') + '</td></tr>';   /* 2026-10-20 親友車：第二、三欄合併 */
       var drv = (r[2] || '') + (r[4] ? '<br>' + r[4] : ''), car = (r[1] || '') + (r[3] ? '<div class="em">' + r[3] + '</div>' : '');
       if (n <= 5) return '<tr><td class="nw">' + r[0] + '</td><td>' + drv + '</td><td>' + car + '</td></tr>';
       var em = r.slice(5).join(' '), er = em.replace(/^緊急聯絡人?/, '').trim().match(/^[（(]([^）)]*)[）)]\s*[:：]\s*(.+)$/);
@@ -150,10 +151,11 @@ a.line{display:flex;align-items:center;justify-content:center;gap:22px;backgroun
     var src = String(t || '').split('\n'), L = [], fl = [];
     var flush = function(){ if (!fl.length) return; L.push('<table class="fleet"><thead><tr><th>車序</th><th>司機</th><th>車號／車款</th><th>緊急聯絡</th></tr></thead><tbody>' + fl.map(function(p){
         var em = String(p[5] || '').replace(/^緊急聯絡人?/, '').trim(), er = em.match(/^[（(]([^）)]*)[）)]\s*[：:]\s*(.+)$/);
+        if (p.length <= 3 && /親友/.test(p[1])) return '<tr><td>' + esc(p[0]) + '</td><td colspan="3">' + esc(p[1]) + '</td></tr>';   /* 2026-10-20 親友車整列合併 */
         return '<tr><td>' + esc(p[0]) + '</td><td>' + esc(p[2] || '') + (p[4] ? '<br>' + esc(p[4]) : '') + '</td><td><span style="white-space:nowrap">' + esc(p[1] || '') + '</span>' + (p[3] ? '<br><span class="sub">' + esc(p[3]) + '</span>' : '') + '</td><td>' + (er ? '<span class="sub">' + esc(er[1]) + '</span><br>' + esc(er[2]) : esc(em.replace(/^[：:]/, ''))) + '</td></tr>'; }).join('') + '</tbody></table>'); fl = []; };
     src.forEach(function(l){
       var p = l.split('｜').map(function(z){ return z.trim(); });
-      if ((p.length >= 4 || (p.length === 3 && p[1] === '親友車')) && /[車台]/.test(p[0]) && p[0].length <= 8){   /* 2026-10-20 親友車也列進車隊表格 */ fl.push(p); return; }
+      if ((p.length >= 4 || (p.length <= 3 && p.length >= 2 && /親友/.test(p[1]))) && /[車台]/.test(p[0]) && p[0].length <= 8){   /* 2026-10-20 親友車也列進車隊表格 */ fl.push(p); return; }
       flush();
       var nv = l.match(/^(導航定位[：:]\s*)(https:\/\/\S+)$/); if (nv){ L.push(esc(nv[1]) + '<a href="' + nv[2] + '" target="_blank" rel="noopener" style="color:#8a6d43;text-decoration:underline">開啟 Google 地圖</a>'); return; }
       var m = l.match(/^([A-Z][.．] [^：\n]{1,12}：)(.+)$/); if (!m || /https?:/.test(m[2])){ L.push(esc(l)); return; }
