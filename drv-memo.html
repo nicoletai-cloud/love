@@ -85,6 +85,19 @@ a.line{display:flex;align-items:center;justify-content:center;gap:22px;backgroun
 .lb-ft a.pri{background:#8a6d43;color:#fff}
 .upd{color:var(--muted);font-size:14px;text-align:center;margin-top:12px}
 .memo a.tel{color:inherit;text-decoration:underline dotted}
+.fleet{width:100%;border-collapse:collapse;white-space:normal;font-size:14.5px;line-height:1.5;margin:4px 0}
+.fleet th,.fleet td{border:1px solid var(--line);padding:6px 7px;text-align:left;vertical-align:top;word-break:break-word}
+.fleet th{background:var(--soft);font-weight:600;color:var(--muted);font-size:13px;white-space:nowrap}
+.fleet td:first-child{white-space:nowrap;font-weight:600}
+.fleet .sub{color:var(--muted);font-size:13px}
+.ft{width:100%;border-collapse:collapse;font-size:14px;line-height:1.45;margin:6px 0;white-space:normal;word-break:break-word}
+.ft th,.ft td{border:1px solid var(--line,#e4dbce);padding:6px 6px;text-align:left;vertical-align:top}
+.ft th{background:var(--soft,#f3ece2);font-weight:600;white-space:nowrap;font-size:13px}
+.ft td.nw{white-space:nowrap;font-weight:600}
+.ft .em{color:var(--muted,#7a7066);font-size:12.5px;margin-top:3px}
+.fleet a.tel,.ft a.tel{white-space:nowrap}
+.fleet td,.fleet th{padding:6px 5px}
+.fleet{font-size:13.5px}
 </style>
 </head>
 <body>
@@ -109,11 +122,44 @@ a.line{display:flex;align-items:center;justify-content:center;gap:22px;backgroun
   function md(d){ var m = String(d || '').match(/^(\d{4})-(\d{2})-(\d{2})/); return m ? m[1] + '/' + (+m[2]) + '/' + (+m[3]) : ''; }
   function tm(t){ var d = new Date(+t); return (d.getMonth() + 1) + '/' + d.getDate() + ' ' + ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2); }
   var esc = function(v){ return String(v).replace(/[&<>"']/g, function(ch){ return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]; }); };
+  /* 2026-10-20 Nicole：車隊那幾行（車序｜車號｜駕駛｜車款｜電話｜緊急聯絡人）改用表格顯示；導航定位長網址改成短連結 */
+  function fleetTbl(h){
+    var L = String(h || '').split('\n'), out = [], buf = [];
+    var flush = function(){
+      if (!buf.length) return;
+      var rows = buf.map(function(l){ return l.split('｜').map(function(s){ return s.trim(); }); }), n = Math.max.apply(null, rows.map(function(r){ return r.length; }));
+      var hd = n <= 2 ? ['車序', '車款'] : n <= 5 ? ['車序', '司機', '車號／車款'] : ['車序', '司機', '車號／車款', '緊急聯絡'];
+    out.push('<table class="ft"><thead><tr>' + hd.map(function(x){ return '<th>' + x + '</th>'; }).join('') + '</tr></thead><tbody>' + rows.map(function(r){
+      if (n <= 2) return '<tr><td class="nw">' + r[0] + '</td><td>' + (r[1] || '') + '</td></tr>';
+      var drv = (r[2] || '') + (r[4] ? '<br>' + r[4] : ''), car = (r[1] || '') + (r[3] ? '<div class="em">' + r[3] + '</div>' : '');
+      if (n <= 5) return '<tr><td class="nw">' + r[0] + '</td><td>' + drv + '</td><td>' + car + '</td></tr>';
+      var em = r.slice(5).join(' '), er = em.replace(/^緊急聯絡人?/, '').trim().match(/^[（(]([^）)]*)[）)]\s*[:：]\s*(.+)$/);
+      return '<tr><td class="nw">' + r[0] + '</td><td>' + drv + '</td><td>' + car + '</td><td>' + (er ? '<div class="em">' + er[1] + '</div>' + er[2] : em) + '</td></tr>';
+    }).join('') + '</tbody></table>');
+      buf = [];
+    };
+    L.forEach(function(l){ if (/^[^｜\s<>]{1,8}車\s*｜/.test(l) && l.split('｜').length >= 2) buf.push(l); else { flush(); out.push(l); } });
+    flush();
+    return out.join('\n').replace(/\n?(<table class="(?:ft|fleet)">[\s\S]*?<\/table>)\n?/g, '$1')
+      .replace(/導航定位：(https:\/\/[^\s<]+)/g, '導航定位：<a href="$1" target="_blank" rel="noopener" style="color:#8a6d43;text-decoration:underline">開啟 Google 地圖</a>');
+  }
+  
   function render(t){
     // 2026-10-20 地點那行的地址可以直接點開 Google 地圖導航
-    var L = String(t || '').split('\n').map(function(l){ var m = l.match(/^([A-Z][.．] [^：\n]{1,12}：)(.+)$/); if (!m || /https?:/.test(m[2])) return esc(l);
-      var addr = m[2].replace(/[（(][^）)]*[）)]\s*$/, '').trim() || m[2]; return esc(m[1]) + '<a href="https://www.google.com/maps/search/?api=1&amp;query=' + encodeURIComponent(addr) + '" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline">' + esc(m[2]) + '</a>'; });
-    return L.join('\n').replace(/\[([^\]\n]+)\]\((https:\/\/[^)\s]+)\)/g, function(_, x, u){ return '<a href="' + u + '" target="_blank" rel="noopener" style="color:#8a6d43;text-decoration:underline">' + x + '</a>'; })
+    // 2026-10-20 Nicole：車隊改成表格（車序／司機・電話／車號・車款／緊急聯絡），導航定位只顯示「開啟地圖」
+    var src = String(t || '').split('\n'), L = [], fl = [];
+    var flush = function(){ if (!fl.length) return; L.push('<table class="fleet"><thead><tr><th>車序</th><th>司機</th><th>車號／車款</th><th>緊急聯絡</th></tr></thead><tbody>' + fl.map(function(p){
+        var em = String(p[5] || '').replace(/^緊急聯絡人?/, '').trim(), er = em.match(/^[（(]([^）)]*)[）)]\s*[：:]\s*(.+)$/);
+        return '<tr><td>' + esc(p[0]) + '</td><td>' + esc(p[2] || '') + (p[4] ? '<br>' + esc(p[4]) : '') + '</td><td><span style="white-space:nowrap">' + esc(p[1] || '') + '</span>' + (p[3] ? '<br><span class="sub">' + esc(p[3]) + '</span>' : '') + '</td><td>' + (er ? '<span class="sub">' + esc(er[1]) + '</span><br>' + esc(er[2]) : esc(em.replace(/^[：:]/, ''))) + '</td></tr>'; }).join('') + '</tbody></table>'); fl = []; };
+    src.forEach(function(l){
+      var p = l.split('｜').map(function(z){ return z.trim(); });
+      if (p.length >= 4 && /車/.test(p[0]) && p[0].length <= 8){ fl.push(p); return; }
+      flush();
+      var nv = l.match(/^(導航定位[：:]\s*)(https:\/\/\S+)$/); if (nv){ L.push(esc(nv[1]) + '<a href="' + nv[2] + '" target="_blank" rel="noopener" style="color:#8a6d43;text-decoration:underline">開啟 Google 地圖</a>'); return; }
+      var m = l.match(/^([A-Z][.．] [^：\n]{1,12}：)(.+)$/); if (!m || /https?:/.test(m[2])){ L.push(esc(l)); return; }
+      var addr = m[2].replace(/[（(][^）)]*[）)]\s*$/, '').trim() || m[2]; L.push(esc(m[1]) + '<a href="https://www.google.com/maps/search/?api=1&amp;query=' + encodeURIComponent(addr) + '" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline">' + esc(m[2]) + '</a>'); });
+    flush();
+    return fleetTbl(L.join('\n')).replace(/\[([^\]\n]+)\]\((https:\/\/[^)\s]+)\)/g, function(_, x, u){ return '<a href="' + u + '" target="_blank" rel="noopener" style="color:#8a6d43;text-decoration:underline">' + x + '</a>'; })
       .replace(/(參考資料|Reference|参考資料) ?(\d+) (https:\/\/(?:drive|docs)\.google\.com\/[^\s<、，,]+)/g, function(_, w, n, u){ var m = u.match(/\/d\/([\w-]{20,})/) || u.match(/[?&]id=([\w-]{20,})/); if (!m) return '<a href="' + u + '" target="_blank" rel="noopener" style="color:#8a6d43;text-decoration:underline">' + w + ' ' + n + '</a>';
         return '<a class="th" href="' + u + '" target="_blank" rel="noopener" data-fid="' + m[1] + '" data-ttl="' + w + ' ' + n + '"><img src="https://drive.google.com/thumbnail?id=' + m[1] + '&amp;sz=w300" alt="' + w + ' ' + n + '" loading="lazy" onerror="this.remove()"><span>' + w + ' ' + n + '</span></a>'; })
       .replace(/(<\/a>)、(?=<a class="th")/g, '$1')
