@@ -110,7 +110,10 @@ a.line{display:flex;align-items:center;justify-content:center;gap:22px;backgroun
   function tm(t){ var d = new Date(+t); return (d.getMonth() + 1) + '/' + d.getDate() + ' ' + ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2); }
   var esc = function(v){ return String(v).replace(/[&<>"']/g, function(ch){ return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]; }); };
   function render(t){
-    return esc(t || '').replace(/\[([^\]\n]+)\]\((https:\/\/[^)\s]+)\)/g, function(_, x, u){ return '<a href="' + u + '" target="_blank" rel="noopener" style="color:#8a6d43;text-decoration:underline">' + x + '</a>'; })
+    // 2026-10-20 地點那行的地址可以直接點開 Google 地圖導航
+    var L = String(t || '').split('\n').map(function(l){ var m = l.match(/^([A-Z][.．] [^：\n]{1,12}：)(.+)$/); if (!m || /https?:/.test(m[2])) return esc(l);
+      var addr = m[2].replace(/[（(][^）)]*[）)]\s*$/, '').trim() || m[2]; return esc(m[1]) + '<a href="https://www.google.com/maps/search/?api=1&amp;query=' + encodeURIComponent(addr) + '" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline">' + esc(m[2]) + '</a>'; });
+    return L.join('\n').replace(/\[([^\]\n]+)\]\((https:\/\/[^)\s]+)\)/g, function(_, x, u){ return '<a href="' + u + '" target="_blank" rel="noopener" style="color:#8a6d43;text-decoration:underline">' + x + '</a>'; })
       .replace(/(參考資料|Reference|参考資料) ?(\d+) (https:\/\/(?:drive|docs)\.google\.com\/[^\s<、，,]+)/g, function(_, w, n, u){ var m = u.match(/\/d\/([\w-]{20,})/) || u.match(/[?&]id=([\w-]{20,})/); if (!m) return '<a href="' + u + '" target="_blank" rel="noopener" style="color:#8a6d43;text-decoration:underline">' + w + ' ' + n + '</a>';
         return '<a class="th" href="' + u + '" target="_blank" rel="noopener" data-fid="' + m[1] + '" data-ttl="' + w + ' ' + n + '"><img src="https://drive.google.com/thumbnail?id=' + m[1] + '&amp;sz=w300" alt="' + w + ' ' + n + '" loading="lazy" onerror="this.remove()"><span>' + w + ' ' + n + '</span></a>'; })
       .replace(/(<\/a>)、(?=<a class="th")/g, '$1')
