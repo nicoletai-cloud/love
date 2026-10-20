@@ -28,6 +28,8 @@ label.q small{font-weight:400;color:var(--muted);margin-left:6px}
 .help a{color:var(--accent)}
 input,textarea{font:inherit;font-size:17px;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:11px 13px;min-height:48px;width:100%}
 textarea{min-height:90px;resize:vertical}
+.nl-row{display:flex;gap:8px;align-items:flex-start;margin:0 0 8px}.nl-row b{padding-top:13px;min-width:1.4em;text-align:right;color:var(--muted)}.nl-row textarea{flex:1;min-height:48px;overflow:hidden}.nl-row button{flex:0 0 auto;width:40px;height:48px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--muted);font:inherit;font-size:16px;cursor:pointer}
+.nl-add{font:inherit;font-size:15px;padding:9px 14px;border:1px dashed var(--accent);border-radius:10px;background:transparent;color:var(--accent);cursor:pointer}
 input:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
 input[readonly]{background:transparent;color:var(--muted)}
 .bad{border-color:var(--warn)!important;background:var(--warn-soft)!important}
@@ -196,7 +198,7 @@ button.go:disabled{opacity:.6}
       <div class="ups" id="ups"></div>
       <input type="file" id="upIn" accept="image/*,application/pdf" multiple hidden>
       <button type="button" class="addstop" id="upBtn">＋ 上傳檔案</button></div>
-    <div class="field"><label class="q" for="note">想提醒司機的事<small>選填</small></label><div class="help">例如：停車位置、要多停的地點、長輩上下車需要協助。</div><textarea id="note" maxlength="800"></textarea></div>
+    <div class="field"><label class="q" for="note">想提醒司機的事<small>選填</small></label><div class="help">例如：停車位置、要多停的地點、長輩上下車需要協助。</div><textarea id="note" maxlength="800" hidden></textarea><div id="noteList"></div><button type="button" class="nl-add" id="noteAdd">＋ 新增一項</button></div>
 
     <div class="err" id="err"></div>
     <button class="go" id="go" type="submit">確認送出</button>
@@ -305,6 +307,7 @@ button.go:disabled{opacity:.6}
       (PLAN ? '<div><span class="k">方案</span>' + PLAN + ' 小時</div>' : '');
     var p = j.pre || {};
     ['name', 'phone', 'meet', 'wed', 'start', 'back', 'restT', 'restAddr', 'loop1', 'loop2T', 'note', 'hostName', 'hostPhone'].forEach(function(id){ if (p[id]) $(id).value = p[id]; });
+    if (window.noteRender) noteRender();
     setPick('mode', p.mode === 'loop' ? '單點繞圈' : '迎娶（男方家 ⇄ 女方家）'); setPick('combo', p.combo); setPick('restYN', p.restYN); setPick('loop2YN', p.loop2YN); setPick('cane', p.cane);
     if (p.friendPos) frPos = String(p.friendPos).split(',').map(function(v){ return parseInt(v, 10) || 0; });
     setPick('friend', p.friend); setPick('friendN', p.friendN ? p.friendN + ' 台' : '');
@@ -457,6 +460,27 @@ button.go:disabled{opacity:.6}
       var t = sp(s); if (s && t !== s && e.clipboardData){ e.clipboardData.setData('text/plain', t); e.preventDefault(); }
     } catch (x) {}
   }, true);
+})();
+</script>
+<script>/* 2026-10-20 Nicole：想提醒司機的事改成一項一格，多一項按「＋ 新增一項」，不要全部擠在一起；存回 #note（每項用空行隔開） */
+(function(){
+  var ta = document.getElementById('note'), box = document.getElementById('noteList'), add = document.getElementById('noteAdd');
+  if (!ta || !box || !add) return;
+  var esc = function(v){ return String(v || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); };
+  var split = function(v){ return String(v || '').trim().split(/\n\s*\n/).map(function(z){ return z.trim().replace(/^\d{1,2}\s*[.．、]\s*/, '').trim(); }).filter(Boolean); };
+  var grow = function(t){ t.style.height = 'auto'; t.style.height = Math.max(48, t.scrollHeight + 2) + 'px'; };
+  var sync = function(){ ta.value = [].map.call(box.querySelectorAll('textarea'), function(t){ return t.value.trim(); }).filter(Boolean).join('\n\n'); };
+  var render = function(extra){
+    var it = split(ta.value); if (extra || !it.length) it.push('');
+    box.innerHTML = it.map(function(z, i){ return '<div class="nl-row"><b>' + (i + 1) + '.</b><textarea rows="1" maxlength="400" placeholder="' + (i === 0 ? '例：停車位在社區地下室 B2' : '下一件想提醒的事') + '">' + esc(z) + '</textarea>' + (it.length > 1 ? '<button type="button" data-del="' + i + '" aria-label="刪除這一項">✕</button>' : '') + '</div>'; }).join('');
+    [].forEach.call(box.querySelectorAll('textarea'), grow);
+    if (extra){ var L = box.querySelectorAll('textarea'); L[L.length - 1].focus(); }
+  };
+  window.noteRender = function(){ render(false); };
+  box.addEventListener('input', function(e){ if (e.target.tagName === 'TEXTAREA'){ grow(e.target); sync(); } });
+  box.addEventListener('click', function(e){ var b = e.target.closest('[data-del]'); if (!b) return; b.closest('.nl-row').remove(); sync(); render(false); });
+  add.addEventListener('click', function(){ sync(); render(true); });
+  render(false);
 })();
 </script>
 </body>
