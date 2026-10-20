@@ -136,14 +136,18 @@ button.go:disabled{opacity:.6}
     <div class="field" id="whoBox"><label class="q">請問填寫的是<b>*</b></label><div class="help">婚顧或主持人幫新人代填也可以，請選「我是婚顧／主持人」。</div>
       <div class="chips" data-pick="who"><button type="button" class="chip">我是新人</button><button type="button" class="chip">我是婚顧／主持人（代填）</button></div></div>
 
-    <div class="sec"><h2><i>01</i>當天聯絡人</h2><p>司機當天會聯絡這位，請填寫方便接電話的人。</p></div>
+    <div class="sec"><h2><i>01</i>聯絡人</h2><p>司機會在用車前一天和新郎核對流程，請填新郎本人的電話；用車當天現場另有人可以聯繫的話，可以再留第二聯絡人。</p></div>
     <div class="row2">
-      <div class="field"><label class="q" for="name">聯絡人姓名<b>*</b></label><input id="name" autocomplete="name" data-req></div>
-      <div class="field"><label class="q" for="phone">聯絡人電話<b>*</b></label><input id="phone" type="tel" inputmode="tel" autocomplete="tel" data-req></div>
+      <div class="field"><label class="q" for="name">新郎姓名<b>*</b></label><input id="name" autocomplete="name" data-req></div>
+      <div class="field"><label class="q" for="phone">新郎電話<b>*</b></label><input id="phone" type="tel" inputmode="tel" autocomplete="tel" data-req></div>
     </div>
-    <!-- 2026-10-20 Nicole：聯絡人身分（例：親友／伴娘車駕駛） -->
-    <div class="field"><label class="q">聯絡人身分<b>*</b></label><div class="help">當天司機有狀況會先聯絡這位。</div>
-      <div class="chips" data-pick="crole"><button type="button" class="chip">新郎</button><button type="button" class="chip">新娘</button><button type="button" class="chip">親友</button><button type="button" class="chip">婚顧／主持人</button><button type="button" class="chip">其他</button></div></div>
+    <!-- 2026-10-20 Nicole：服務確認單、派車單一定有新郎姓名電話；客人另外留的聯絡人放第二聯絡人（例：親友／伴娘車駕駛） -->
+    <div class="row2">
+      <div class="field"><label class="q" for="c2name">第二聯絡人姓名<small>選填</small></label><input id="c2name" maxlength="20" placeholder="用車當天現場可以聯繫的人"></div>
+      <div class="field"><label class="q" for="c2phone">第二聯絡人電話<small>選填</small></label><input id="c2phone" type="tel" inputmode="tel" maxlength="20"></div>
+    </div>
+    <div class="field" id="c2Box" hidden><label class="q">第二聯絡人是<b>*</b></label>
+      <div class="chips" data-pick="crole"><button type="button" class="chip">新娘</button><button type="button" class="chip">親友</button><button type="button" class="chip">婚顧／主持人</button><button type="button" class="chip">其他</button></div></div>
     <div class="field" id="crelBox" hidden><label class="q" for="crel">是新人的什麼人<b>*</b></label><input id="crel" maxlength="30" placeholder="例：伴娘車駕駛、新郎哥哥、伴郎"></div>
 
     <div class="sec"><h2><i>02</i>地址與時間</h2><p>地址請填完整（含門牌號碼）；飯店或場館請一併註明名稱。</p></div>
@@ -246,7 +250,7 @@ button.go:disabled{opacity:.6}
     if (key === 'friendN' || key === 'friend') renderFr();
     if (key === 'restYN' && typeof segRest === 'function' && segReady) segRest();
     $('hostBox').hidden = pick.host !== '有';
-    $('crelBox').hidden = !/^(親友|其他)$/.test(pick.crole || '');
+    c2Ui();
     fireUi();
     hoursTip();
   }
@@ -295,6 +299,8 @@ button.go:disabled{opacity:.6}
   Array.prototype.forEach.call(document.querySelectorAll('[data-pick]'), function(g){
     g.addEventListener('click', function(e){ var b = e.target.closest('.chip'); if (!b) return; var v = b.textContent.trim(); setPick(g.getAttribute('data-pick'), pick[g.getAttribute('data-pick')] === v ? '' : v); g.classList.remove('bad'); });
   });
+  function c2Ui(){ var on = !!$('c2name').value.trim(); $('c2Box').hidden = !on; $('crelBox').hidden = !on || !/^(親友|其他)$/.test(pick.crole || ''); }
+  $('c2name').addEventListener('input', c2Ui);
   function mins(t){ var m = /^(\d{1,2}):(\d{2})/.exec(t || ''); return m ? (+m[1]) * 60 + (+m[2]) : null; }
   function hoursTip(){
     var loop = pick.mode === '單點繞圈', el = $('hoursTip');
@@ -357,7 +363,9 @@ button.go:disabled{opacity:.6}
       (j.cars ? '<div><span class="k">禮車</span>' + esc(j.cars) + '</div>' : '') +
       (PLAN ? '<div><span class="k">方案</span>' + PLAN + ' 小時</div>' : '');
     var p = j.pre || {};
-    ['name', 'phone', 'meet', 'wed', 'start', 'back', 'restT', 'restAddr', 'loop1', 'loop2T', 'note', 'hostName', 'hostPhone', 'dAddr', 'crel'].forEach(function(id){ if (p[id]) $(id).value = p[id]; });
+    ['name', 'phone', 'meet', 'wed', 'start', 'back', 'restT', 'restAddr', 'loop1', 'loop2T', 'note', 'hostName', 'hostPhone', 'dAddr', 'crel', 'c2name', 'c2phone'].forEach(function(id){ if (p[id]) $(id).value = p[id]; });
+    if (j.groom && p.name && p.name.replace(/\s/g, '') !== j.groom.replace(/\s/g, '') && !p.c2name){ $('c2name').value = p.name; $('c2phone').value = p.phone || ''; $('name').value = j.groom; $('phone').value = ''; }   // 之前填的是別人 → 改放第二聯絡人，請新人補新郎電話
+    else if (j.groom && !p.name) $('name').value = j.groom;
     setPick('crole', p.crole);
     if (window.noteRender) noteRender();
     setPick('mode', p.mode === 'loop' ? '單點繞圈' : '迎娶（男方家 ⇄ 女方家）'); setPick('combo', p.combo); setPick('restYN', p.restYN);
@@ -373,10 +381,11 @@ button.go:disabled{opacity:.6}
     e.preventDefault(); var miss = [];
     var loop = pick.mode === '單點繞圈';
     Array.prototype.forEach.call(document.querySelectorAll('[data-req]'), function(el){ if (el.closest('[hidden]')){ el.classList.remove('bad'); return; } var ok = !!el.value.trim(); el.classList.toggle('bad', !ok); if (!ok) miss.push(el); });
-    (loop ? ['who', 'crole', 'combo', 'loop2YN', 'friend', 'cane', 'fireYN'] : ['who', 'crole', 'combo', 'restYN', 'friend', 'cane', 'fireYN']).forEach(function(kk){ var g = document.querySelector('[data-pick="' + kk + '"]'); var ok = !!pick[kk]; g.classList.toggle('bad', !ok); if (!ok) miss.push(g); });
+    (loop ? ['who', 'combo', 'loop2YN', 'friend', 'cane', 'fireYN'] : ['who', 'combo', 'restYN', 'friend', 'cane', 'fireYN']).concat($('c2Box').hidden ? [] : ['crole']).forEach(function(kk){ var g = document.querySelector('[data-pick="' + kk + '"]'); var ok = !!pick[kk]; g.classList.toggle('bad', !ok); if (!ok) miss.push(g); });
     if (loop && pick.loop2YN === '是' && !$('loop2T').value){ $('loop2T').classList.add('bad'); miss.push($('loop2T')); }
     if (!loop && pick.restYN === '需要') ['restAddr'].forEach(function(id){ var el = $(id), ok = !!el.value.trim(); el.classList.toggle('bad', !ok); if (!ok) miss.push(el); });
     if (!$('crelBox').hidden && !$('crel').value.trim()){ $('crel').classList.add('bad'); miss.push($('crel')); }
+    if (!$('c2Box').hidden && !$('c2phone').value.trim()){ $('c2phone').classList.add('bad'); miss.push($('c2phone')); }
     if (pick.fireYN === '要放'){
       if (!firePick.length){ $('firePts').classList.add('bad'); miss.push($('firePts')); }
       var gT = document.querySelector('[data-pick="fireType"]'); gT.classList.toggle('bad', !pick.fireType); if (!pick.fireType) miss.push(gT);
@@ -394,7 +403,7 @@ button.go:disabled{opacity:.6}
       combo: pick.combo, restYN: pick.restYN, restT: pick.restYN === '需要' ? $('restT').value : '', restAddr: pick.restYN === '需要' ? $('restAddr').value.trim() : '', cane: pick.cane, friend: pick.friend, friendN: frN() ? String(frN()) : '', friendPos: frN() ? frPos.slice(0, frN()).join(',') : '', note: $('note').value.trim() };
     var fire = pick.fireYN === '要放', ord = firePts().map(function(z){ return z[0]; });
     f.fireYN = pick.fireYN || ''; f.fire = fire ? ord.filter(function(v){ return firePick.indexOf(v) >= 0; }).join(',') : ''; f.fireType = fire ? (pick.fireType || '') : '';
-    f.crole = pick.crole || ''; f.crel = $('crelBox').hidden ? '' : $('crel').value.trim();
+    var c2 = !$('c2Box').hidden; f.c2name = c2 ? $('c2name').value.trim() : ''; f.c2phone = c2 ? $('c2phone').value.trim() : ''; f.crole = c2 ? (pick.crole || '') : ''; f.crel = c2 && !$('crelBox').hidden ? $('crel').value.trim() : '';
     f.host = pick.host || ''; f.hostName = pick.host === '有' ? $('hostName').value.trim() : ''; f.hostPhone = pick.host === '有' ? $('hostPhone').value.trim() : '';
     $('err').textContent = '';
     if (ups.some(function(u){ return u.busy; })){ $('err').textContent = '檔案還在上傳，請稍等一下再送出'; return; }
