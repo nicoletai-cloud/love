@@ -328,10 +328,13 @@ button.go:disabled{opacity:.6}
     var SV = stopVals(); for (var si = 0; si < SV.length; si++){ if (!SV[si].a) return fail('請填寫停靠地點 ' + 'CDEFG'.charAt(si) + ' 的地址', stopBlocks()[si].querySelector('.sAddr')); body['o' + (si + 1)] = SV[si].a; body['o' + (si + 1) + 'L'] = SV[si].l; }
     if (PREVIEW){ $('f').hidden = true; $('done').hidden = false; $('done').querySelector('p').textContent = '（預覽模式：資料沒有送出）\n\n' + Object.keys(body).filter(function(k){ return k !== 'action' && k !== 'hp' && body[k]; }).map(function(k){ return k + '：' + body[k]; }).join('\n'); window.scrollTo(0, 0); return; }
     var go = $('go'); go.disabled = true; go.textContent = '送出中…';
+    /* 2026-10-20 客人反映一直「送出中」：系統忙時要比較久 → 15 秒後提示別關頁面；100 秒還沒回應就停下來，請客人先不要重填、直接回 LINE */
+    var t1 = setTimeout(function(){ go.textContent = '資料處理中，請勿關閉頁面…'; }, 15000), slow = false;
+    var t2 = setTimeout(function(){ slow = true; go.disabled = false; go.textContent = '送出'; fail('系統回應比較慢，資料可能已經送到了。請先不要重填，直接回 LINE 告訴我們「表單已送出」，我們會幫您確認。'); }, 100000);
     fetch(BOT, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body) })
       .then(function(r){ return r.json(); })
-      .then(function(j){ if (!j || !j.ok) throw new Error((j && j.error) || '送出失敗'); $('f').hidden = true; $('done').hidden = false; window.scrollTo(0, 0); })
-      .catch(function(err){ go.disabled = false; go.textContent = '送出'; fail((err && err.message ? err.message : '送出失敗') + '，請再試一次；如果一直失敗，請直接聯絡客服。'); });
+      .then(function(j){ clearTimeout(t1); clearTimeout(t2); if (!j || !j.ok) throw new Error((j && j.error) || '送出失敗'); $('f').hidden = true; $('done').hidden = false; window.scrollTo(0, 0); })
+      .catch(function(err){ clearTimeout(t1); clearTimeout(t2); if (slow) return; go.disabled = false; go.textContent = '送出'; fail((err && err.message ? err.message : '送出失敗') + '，請再試一次；如果一直失敗，請直接回 LINE 告訴我們。'); });
   });
 })();
 </script>
