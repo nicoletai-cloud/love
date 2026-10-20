@@ -197,7 +197,7 @@ a.line{display:flex;align-items:center;justify-content:center;gap:22px;backgroun
     }).join('') + '</tbody></table>');
       buf = [];
     };
-    L.forEach(function(l){ if (/^[^｜\s<>]{1,8}車\s*｜/.test(l) && l.split('｜').length >= 2) buf.push(l); else { flush(); out.push(l); } });
+    L.forEach(function(l){ if (/^[^｜\s<>]{1,8}[車台]\s*｜/.test(l) && l.split('｜').length >= 2) buf.push(l); else { flush(); out.push(l); } });
     flush();
     return out.join('\n').replace(/\n?(<table class="ft">[\s\S]*?<\/table>)\n?/g, '$1')
       .replace(/導航定位：(https:\/\/[^\s<]+)/g, '導航定位：<a href="$1" target="_blank" rel="noopener" style="color:#8a6d43;text-decoration:underline">開啟 Google 地圖</a>');
