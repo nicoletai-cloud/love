@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>派車單｜好好禮車</title>
+<meta name="robots" content="noindex">
+<meta property="og:title" content="派車單｜好好禮車">
+<meta property="og:description" content="婚禮用車派車單：行程、車隊、地點與禮車流程。">
+<style>
+:root{--bg:#f8f5f0;--surface:#fff;--fg:#2f2a24;--muted:#7a7066;--line:#e4dbce;--accent:#8a6d43;--accent-ink:#fff;--soft:#f3ece2;--warn:#b4532a;--warn-soft:#fbeee6;--ok:#2f7d4f;--ok-soft:#e8f4ec}
+@media (prefers-color-scheme:dark){:root{--bg:#1d1a17;--surface:#26221e;--fg:#f1ebe3;--muted:#b3a899;--line:#3b352e;--accent:#c9a46b;--accent-ink:#1d1a17;--soft:#2e2924;--warn:#f0a07a;--warn-soft:#3a2a22;--ok:#7fc79a;--ok-soft:#1f3328}}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.6 -apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif}
+.wrap{max-width:560px;margin:0 auto;padding:22px 16px calc(36px + env(safe-area-inset-bottom))}
+.brand{color:var(--accent);font-weight:700;letter-spacing:.08em;font-size:14px}
+h1{font-size:24px;margin:4px 0 8px}
+h2{font-size:19px;margin:0 0 10px}
+.lead{color:var(--muted);font-size:15px;margin:0 0 12px;white-space:pre-line}
+.load{color:var(--muted);padding:30px 0;text-align:center;white-space:pre-line}
+.memo{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;white-space:pre-wrap;word-break:break-word;font-size:15.5px;line-height:1.75}
+.side{display:grid;gap:14px;align-content:start}
+.opt{display:flex;gap:12px;align-items:flex-start;text-align:left;width:100%;font:inherit;color:var(--fg);background:var(--surface);border:2px solid var(--line);border-radius:14px;padding:14px;cursor:pointer}
+.opt[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.opt .dot{flex:none;width:22px;height:22px;border-radius:50%;border:2px solid var(--line);margin-top:2px;display:flex;align-items:center;justify-content:center}
+.opt[aria-pressed="true"] .dot{border-color:var(--accent)}
+.opt[aria-pressed="true"] .dot::after{content:"";width:12px;height:12px;border-radius:50%;background:var(--accent)}
+.opt b{display:block;font-size:17px}
+.opt span{display:block;color:var(--muted);font-size:15px;margin-top:2px}
+.opt .amt{color:var(--muted);font-weight:400;font-size:14.5px;margin-top:2px}
+.warnbox{background:var(--soft);color:var(--muted);border-radius:12px;padding:10px 14px;font-size:14.5px;font-weight:400}
+.chk{display:flex;gap:10px;align-items:flex-start;font-size:16px;cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.chk input{width:22px;height:22px;margin:1px 0 0;flex:none;accent-color:var(--accent)}
+.err{color:var(--warn);font-size:14.5px;margin:4px 0 0;min-height:0}
+button.go{font:inherit;font-weight:700;font-size:18px;color:var(--accent-ink);background:var(--accent);border:0;border-radius:12px;min-height:54px;width:100%;cursor:pointer}
+button.go:disabled{opacity:.6}
+.ghost{font:inherit;font-size:15.5px;color:var(--accent);background:transparent;border:1px solid var(--accent);border-radius:12px;min-height:46px;width:100%;cursor:pointer}
+textarea{font:inherit;font-size:16px;width:100%;min-height:96px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface);color:var(--fg)}
+/* 完成畫面（2026-10-17 依 Nicole 提供的版面） */
+.done{text-align:center;padding:26px 4px 6px;max-width:480px;margin:0 auto}
+.d-brand{color:var(--accent);font-weight:600;font-size:22px;letter-spacing:.18em}
+.d-en{color:var(--muted);font-size:12.5px;letter-spacing:.32em;margin-top:6px}
+.d-ck{width:118px;height:128px;border-radius:50%;border:1.5px solid #b9c2ad;color:#6d7f5e;display:flex;align-items:center;justify-content:center;margin:38px auto 30px}
+.d-kicker{color:var(--muted);font-size:15px;letter-spacing:.14em}
+.d-title{font-family:"Songti TC","Noto Serif TC","Source Han Serif TC","PMingLiU",serif;font-weight:400;font-size:30px;letter-spacing:.06em;line-height:1.4;margin:12px 0 12px}
+.d-sub{color:var(--muted);font-size:16px;letter-spacing:.05em;margin:0;white-space:pre-line}
+.d-hr{border:0;border-top:1px solid var(--line);margin:34px 0 26px}
+.d-tips{text-align:left}
+.d-tips h3{font-size:16px;font-weight:600;color:var(--muted);letter-spacing:.06em;margin:0 0 18px}
+.d-row{display:flex;justify-content:space-between;gap:12px;color:var(--muted);font-size:16px;letter-spacing:.04em}
+.d-note{display:flex;gap:10px;color:var(--muted);font-size:15.5px;line-height:1.9;margin-top:14px}
+.d-note i{font-style:normal;font-size:13px;flex:none;line-height:2.2}
+a.line{display:flex;align-items:center;justify-content:center;gap:22px;background:var(--accent);color:var(--accent-ink);text-decoration:none;font-weight:600;letter-spacing:.08em;border-radius:6px;min-height:62px;margin-top:36px}
+.d-bank{text-align:left;margin-top:22px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px}
+.d-bank .lbl{font-size:15px;font-weight:600;letter-spacing:.04em;margin-bottom:8px}
+.d-bank pre{font:inherit;font-size:16px;line-height:1.8;white-space:pre-wrap;margin:0;color:var(--fg)}
+.d-bank button{font:inherit;font-size:14.5px;color:var(--accent);background:transparent;border:1px solid var(--accent);border-radius:6px;padding:6px 14px;margin-top:10px;cursor:pointer}
+.d-paid{text-align:left;margin-top:28px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px 16px;display:grid;gap:12px}
+.d-paid h3{font-size:16px;font-weight:600;margin:0;letter-spacing:.04em}
+.d-paid p{color:var(--muted);font-size:15px;margin:0}
+.d-paid label{display:grid;gap:6px;font-size:15px;color:var(--muted)}
+.d-paid input[type=text]{font:inherit;font-size:18px;letter-spacing:.2em;border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--bg);color:var(--fg);width:100%}
+.d-paid input[type=file]{font-size:14px;color:var(--muted)}
+.d-paid .go{border-radius:6px;min-height:52px;font-weight:600;letter-spacing:.06em}
+.d-paid .okmsg{color:#6d7f5e;font-size:15.5px}
+.d-foot{color:var(--muted);font-size:14px;letter-spacing:.1em;margin-top:56px}
+.okbadge{display:inline-block;background:var(--ok-soft);color:var(--ok);border-radius:999px;padding:4px 14px;font-size:14.5px;margin:0 0 12px}
+.shbtn{display:flex;align-items:center;justify-content:center;text-decoration:none;margin-top:16px}
+#share .memo{margin:0}
+.prev{font-size:14.5px;color:var(--muted);text-align:center;margin-top:10px}
+/* iPhone Duo 打開（寬螢幕）：左邊確認單、右邊付款與確認 */
+@media (min-width:720px){.wrap{max-width:1000px;padding:28px 24px 40px}.grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:22px;align-items:start}.side{position:sticky;top:16px}}
+.th{display:inline-flex;flex-direction:column;align-items:center;gap:2px;vertical-align:top;margin:6px 8px 2px 0;text-decoration:none;color:#8a6d43;font-size:12.5px;line-height:1.3}
+.th img{width:88px;height:88px;object-fit:cover;border-radius:10px;border:1px solid var(--line,#e5ddd2);background:#f4f1ec;display:block}
+.lb{position:fixed;inset:0;z-index:50;background:rgba(30,24,18,.55);display:flex;align-items:center;justify-content:center;padding:16px}
+.lb[hidden]{display:none}
+.lb-box{background:var(--surface,#fff);border-radius:16px;max-width:560px;width:100%;max-height:88vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.25)}
+.lb-hd{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;font-weight:600;border-bottom:1px solid rgba(0,0,0,.08)}
+.lb-x{border:0;background:none;font-size:22px;line-height:1;cursor:pointer;color:inherit;padding:4px 8px}
+.lb-img{flex:1;min-height:0;overflow:auto;display:flex;align-items:flex-start;justify-content:center;background:#f4f1ec}
+.lb-img img{max-width:100%;height:auto;display:block}
+.lb-ft{display:flex;gap:8px;justify-content:flex-end;padding:10px 14px;border-top:1px solid rgba(0,0,0,.08)}
+.lb-ft a{font-size:14px;padding:8px 14px;border-radius:999px;text-decoration:none;border:1px solid #8a6d43;color:#8a6d43}
+.lb-ft a.pri{background:#8a6d43;color:#fff}
+.upd{color:var(--muted);font-size:14px;text-align:center;margin-top:12px}
+.memo a.tel{color:inherit;text-decoration:underline dotted}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div id="top"><div class="brand">好好禮車 NICE WEDDING CAR</div>
+  <h1>派車單</h1></div>
+  <div id="loading" class="load">讀取派車單中…</div>
+  <div id="bad" class="load" hidden></div>
+  <!-- 2026-10-20 Nicole：司機派車單改成網頁（非同業單），不用 Google 文件 -->
+  <div id="main" hidden>
+    <p class="lead" id="head"></p>
+    <div class="memo" id="memo"></div>
+    <p class="upd" id="upd"></p>
+  </div>
+</div>
+<script>
+(function(){
+  var BOT = 'https://script.google.com/macros/s/AKfycbwoKk13j5YOtkA5cTh3FtvECekYm0uMBPsid1H--kB7bhUVpDFvSnSA0iTzCfc8IT11_Q/exec';
+  var $ = function(id){ return document.getElementById(id); };
+  var Q = new URLSearchParams(location.search), no = (Q.get('no') || '').trim(), dk = (Q.get('d') || '').trim();
+  function bad(t){ $('loading').hidden = true; $('bad').hidden = false; $('bad').textContent = t; }
+  function md(d){ var m = String(d || '').match(/^(\d{4})-(\d{2})-(\d{2})/); return m ? m[1] + '/' + (+m[2]) + '/' + (+m[3]) : ''; }
+  function tm(t){ var d = new Date(+t); return (d.getMonth() + 1) + '/' + d.getDate() + ' ' + ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2); }
+  var esc = function(v){ return String(v).replace(/[&<>"']/g, function(ch){ return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]; }); };
+  function render(t){
+    return esc(t || '').replace(/\[([^\]\n]+)\]\((https:\/\/[^)\s]+)\)/g, function(_, x, u){ return '<a href="' + u + '" target="_blank" rel="noopener" style="color:#8a6d43;text-decoration:underline">' + x + '</a>'; })
+      .replace(/(參考資料|Reference|参考資料) ?(\d+) (https:\/\/(?:drive|docs)\.google\.com\/[^\s<、，,]+)/g, function(_, w, n, u){ var m = u.match(/\/d\/([\w-]{20,})/) || u.match(/[?&]id=([\w-]{20,})/); if (!m) return '<a href="' + u + '" target="_blank" rel="noopener" style="color:#8a6d43;text-decoration:underline">' + w + ' ' + n + '</a>';
+        return '<a class="th" href="' + u + '" target="_blank" rel="noopener" data-fid="' + m[1] + '" data-ttl="' + w + ' ' + n + '"><img src="https://drive.google.com/thumbnail?id=' + m[1] + '&amp;sz=w300" alt="' + w + ' ' + n + '" loading="lazy" onerror="this.remove()"><span>' + w + ' ' + n + '</span></a>'; })
+      .replace(/(<\/a>)、(?=<a class="th")/g, '$1')
+      .replace(/(^|[^\d\/=])(09\d{8})(?!\d)/g, function(_, p, n){ return p + '<a class="tel" href="tel:' + n + '">' + n + '</a>'; })   // 電話可以直接點撥
+      .replace(/(^|[\s：:])(https:\/\/(?!drive\.google|docs\.google)[^\s<、，]+)/g, function(_, p, u){ return p + '<a href="' + u + '" target="_blank" rel="noopener" style="color:#8a6d43;text-decoration:underline">' + u + '</a>'; });
+  }
+  if (!no || !dk) return bad('連結不完整，請回到司機群組重新點一次派車單連結。');
+  fetch(BOT, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'wedMemo', op: 'drv', no: no, d: dk }) }).then(function(r){ return r.json(); })
+    .then(function(j){ if (!j || !j.ok) throw new Error((j && j.error) || '讀取失敗');
+      $('loading').hidden = true; $('main').hidden = false;
+      $('head').textContent = '訂單編號：' + j.no + (j.date ? '｜用車日期：' + md(j.date) : '') + (j.couple ? '\n' + j.couple : '');
+      $('memo').innerHTML = render(j.text);
+      $('upd').textContent = j.at ? '最後更新：' + tm(j.at) + '（行程有異動時，這個連結的內容會自動更新）' : '';
+    }).catch(function(e){ bad(e.message || '讀取失敗，請稍後再試，或在司機群組告訴負責人。'); });
+})();
+</script>
+<script>/* 2026-10-17 中英文、數字與中文之間自動加空格（畫面＋複製的文字）；輸入框、網址不動 */
+(function(){
+  if (window.nwcSpace) return;
+  var H = '㄀-ㄯ㐀-䶿一-鿿豈-﫿', T = /[㄀-ㄯ㐀-䶿一-鿿豈-﫿]/,
+      A = new RegExp('([' + H + '])([A-Za-z0-9$@#])', 'g'), B = new RegExp('([A-Za-z0-9%])([' + H + '])', 'g');
+  function sp(t){
+    if (typeof t !== 'string' || !T.test(t)) return t;
+    var P = t.split(/(https?:\/\/[\x21-\x7e]+|[\w.+-]+@[\w-]+\.[A-Za-z][\w.-]*)/), o = '';
+    for (var i = 0; i < P.length; i++){ var p = i % 2 ? P[i] : P[i].replace(A, '$1 $2').replace(B, '$1 $2'); if (p && o && (i % 2 ? T.test(o.slice(-1)) : T.test(p.charAt(0)) && !/\s$/.test(o))) o += ' '; o += p; }
+    return o;
+  }
+  window.nwcSpace = sp;
+  var SKIP = /^(SCRIPT|STYLE|TEXTAREA|INPUT|SELECT|OPTION|CODE|NOSCRIPT|SVG)$/i;
+  function skip(el){ return !el || SKIP.test(el.nodeName) || el.isContentEditable || (el.closest && el.closest('.nopangu,[contenteditable="true"]')); }
+  function fix(n){
+    if (!n) return;
+    if (n.nodeType === 3){ if (skip(n.parentNode)) return; var v = n.nodeValue, w = sp(v); if (w !== v) n.nodeValue = w; return; }
+    if (n.nodeType !== 1 || skip(n)) return;
+    if (n.placeholder && /^(INPUT|TEXTAREA)$/.test(n.nodeName)){ var ph = sp(n.placeholder); if (ph !== n.placeholder) n.placeholder = ph; }
+    var c = n.childNodes; for (var i = 0; i < c.length; i++) fix(c[i]);
+    if (n.querySelectorAll){ var ins = n.querySelectorAll('input[placeholder],textarea[placeholder]'); for (var j = 0; j < ins.length; j++){ var q = sp(ins[j].placeholder); if (q !== ins[j].placeholder) ins[j].placeholder = q; } }
+  }
+  var Q = [], tm = 0;
+  function run(){ tm = 0; var L = Q; Q = []; for (var i = 0; i < L.length; i++) fix(L[i]); }
+  function start(){
+    fix(document.body); if (document.title) document.title = sp(document.title);
+    new MutationObserver(function(ms){ for (var i = 0; i < ms.length; i++){ var m = ms[i]; if (m.type === 'characterData') Q.push(m.target); else for (var j = 0; j < m.addedNodes.length; j++) Q.push(m.addedNodes[j]); } if (!tm) tm = setTimeout(run, 0); })
+      .observe(document.body, { childList: true, subtree: true, characterData: true });
+  }
+  if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
+  // 複製出去的文字也加空格（複製按鈕、手動選取複製都適用）
+  try { if (navigator.clipboard && navigator.clipboard.writeText){ var w = navigator.clipboard.writeText.bind(navigator.clipboard); navigator.clipboard.writeText = function(t){ return w(sp(String(t))); }; } } catch (e) {}
+  document.addEventListener('copy', function(e){
+    try {
+      var a = document.activeElement, s = '';
+      if (a && /^(TEXTAREA|INPUT)$/.test(a.nodeName) && a.selectionStart != null) s = a.value.substring(a.selectionStart, a.selectionEnd);
+      else s = String(window.getSelection ? window.getSelection() : '');
+      var t = sp(s); if (s && t !== s && e.clipboardData){ e.clipboardData.setData('text/plain', t); e.preventDefault(); }
+    } catch (x) {}
+  }, true);
+})();
+</script>
+<div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-labelledby="lbT"><div class="lb-box"><div class="lb-hd"><span id="lbT">參考資料</span><button class="lb-x" id="lbX" aria-label="關閉">×</button></div><div class="lb-img"><img id="lbImg" alt="參考資料預覽"></div><div class="lb-ft"><a id="lbOpen" target="_blank" rel="noopener">開啟原檔</a><a id="lbDl" class="pri" target="_blank" rel="noopener">下載</a></div></div></div>
+<script>
+/* 2026-10-19 Nicole：參考資料點了在原畫面上用小視窗預覽（背景半透明），可下載，不跳到別的視窗 */
+(function(){
+  var lb = document.getElementById('lb'), img = document.getElementById('lbImg');
+  function close(){ lb.hidden = true; img.removeAttribute('src'); }
+  document.addEventListener('click', function(e){
+    var a = e.target.closest && e.target.closest('a[data-fid]'); if (!a) return;
+    e.preventDefault(); var id = a.getAttribute('data-fid');
+    document.getElementById('lbT').textContent = a.getAttribute('data-ttl') || '參考資料';
+    img.src = 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(id) + '&sz=w1600';
+    img.onerror = function(){ window.open(a.href, '_blank', 'noopener'); close(); };   // 預覽不出來（例：特殊格式）就開原檔
+    document.getElementById('lbOpen').href = a.href;
+    document.getElementById('lbDl').href = 'https://drive.google.com/uc?export=download&id=' + encodeURIComponent(id);
+    lb.hidden = false;
+  });
+  document.getElementById('lbX').addEventListener('click', close);
+  lb.addEventListener('click', function(e){ if (e.target === lb) close(); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && !lb.hidden) close(); });
+})();
+</script>
+</body>
+</html>
