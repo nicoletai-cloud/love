@@ -173,7 +173,13 @@ a.line{display:flex;align-items:center;justify-content:center;gap:22px;backgroun
     .then(function(j){ if (!j || !j.ok) throw new Error((j && j.error) || '讀取失敗');
       $('loading').hidden = true; $('main').hidden = false;
       $('head').textContent = '訂單編號：' + j.no + (j.date ? '｜用車日期：' + md(j.date) : '') + (j.couple ? '\n' + j.couple : '');
-      $('memo').innerHTML = render(j.text);
+      var tx = j.text;
+      if (Q.get('np') === '1'){   /* 2026-10-23 Nicole：分享版不含款項（款項那段到下一個段落標題前都拿掉） */
+        var out = [], skip = false;
+        String(tx || '').split('\n').forEach(function(l){ var h = l.trim(); if (/^款項[:：]?$/.test(h)){ skip = true; return; } if (skip && /^(給司機的小提醒|注意事項|禮車流程|車序)/.test(h)) skip = false; if (!skip) out.push(l); });
+        tx = out.join('\n').replace(/\n+$/, '');
+      }
+      $('memo').innerHTML = render(tx);
       $('upd').textContent = j.at ? '最後更新：' + tm(j.at) + '（行程有異動時，這個連結的內容會自動更新）' : '';
     }).catch(function(e){ bad(e.message || '讀取失敗，請稍後再試，或在司機群組告訴負責人。'); });
 })();
