@@ -59,6 +59,8 @@ input[readonly]{background:transparent;color:var(--muted)}
 .same input{width:18px;height:18px;min-height:0;margin:0;padding:0;border:0;box-shadow:none;outline-offset:2px;accent-color:var(--accent)}
 .stop{border:1px solid var(--line);border-radius:14px;padding:12px 14px;background:var(--surface)}
 .stop .rm{font:inherit;font-size:14px;background:none;border:0;color:#b4532a;cursor:pointer;padding:4px 6px}
+.stop select.ptype{font:inherit;font-size:16px;font-weight:600;border:1px solid var(--line);border-radius:10px;padding:6px 10px;background:var(--surface);color:var(--fg);min-height:40px}
+.stop .q{display:flex;align-items:center;gap:6px}
 .addstop{font:inherit;font-size:15px;width:100%;min-height:46px;border:1.5px dashed var(--line);border-radius:14px;background:transparent;color:var(--fg);cursor:pointer}
 .addstop:disabled{opacity:.45;cursor:default}
 .route{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-height:52px;font-size:17px;font-weight:600;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
@@ -112,15 +114,14 @@ button.go:disabled{opacity:.6}
     </div>
     <div class="note-tip" id="hoursTip" hidden></div>
     <div class="field"><label class="q" for="meet"><span class="pk">A</span>集合地址<b>*</b></label><input id="meet" data-req placeholder="完整地址，例如：台北市大安區和平東路二段 1 號"><div class="chips sub" data-pick="meetL"><button type="button" class="chip">男方家</button><button type="button" class="chip">女方家</button><button type="button" class="chip">飯店</button><button type="button" class="chip">新家</button><button type="button" class="chip" data-other>其他</button></div><input id="meetLOther" class="sub" placeholder="地點名稱" hidden></div>
-    <div class="field"><div class="qrow"><label class="q" for="wed"><span class="pk">B</span>迎娶地址<b>*</b></label><label class="same"><input type="checkbox" id="wedSame"> 同集合地址</label></div><div id="wedBox"><input id="wed" data-req placeholder="完整地址"><div class="chips sub" data-pick="wedL"><button type="button" class="chip">女方家</button><button type="button" class="chip">男方家</button><button type="button" class="chip">飯店</button><button type="button" class="chip" data-other>其他</button></div><input id="wedLOther" class="sub" placeholder="地點名稱" hidden></div></div>
     <div id="stops"></div>
-    <div class="field"><button type="button" class="addstop" id="addStop">＋ 新增停靠地點</button><div class="help" id="stopHelp">還有其他要停的地方（例如新家、祭祖、證婚）再新增，最多 5 個；合約上會直接顯示地點名稱。</div></div>
+    <div class="field"><button type="button" class="addstop" id="addStop">＋ 新增地點</button><div class="help" id="stopHelp">依當天會去的地方依序新增（迎娶、入房、宴客、證婚…），代號會自動排成 B、C、D…</div></div>
 
     <div class="field"><label class="q">當日流程<small>選填，可複選</small></label><div class="chips" id="dayFlow"><button type="button" class="chip" aria-pressed="false">文定</button><button type="button" class="chip" aria-pressed="false">迎娶</button><button type="button" class="chip" aria-pressed="false">祭祖</button><button type="button" class="chip" aria-pressed="false">證婚</button><button type="button" class="chip" aria-pressed="false">宴客</button></div></div>
-    <div class="field"><label class="q">禮車路線<small>選填</small></label><div class="help">依照當天的順序點選上面的地點代號，例如：A › B › A › C。點錯可以按「⌫ 倒退」。還不確定可以選「行前一週確認」。</div>
+    <div class="field"><label class="q">禮車路線<small>選填</small></label><div class="help">依照當天的順序點選上面的地點代號，例如：A › B › A › C；同一處繞一圈可按「繞圈」。點錯可以按「⌫ 倒退」。還不確定可以選「行前一週確認」。</div>
       <div class="route" id="routeShow"><span class="ph">還沒選擇路線</span></div>
       <div class="chips sub" id="routeChips"></div>
-      <div class="rtools"><button type="button" class="tool" id="rBack">⌫ 倒退</button><button type="button" class="tool" id="rClear">清除</button><button type="button" class="chip" id="rLater" aria-pressed="false">行前一週確認</button></div>
+      <div class="rtools"><button type="button" class="tool" id="rBack">⌫ 倒退</button><button type="button" class="tool" id="rClear">清除</button><button type="button" class="tool" id="rLoop">繞圈</button><button type="button" class="chip" id="rLater" aria-pressed="false">行前一週確認</button></div>
     </div>
     <div class="field" hidden><textarea id="note"></textarea></div>
 
@@ -248,62 +249,56 @@ button.go:disabled{opacity:.6}
   document.querySelector('[data-pick="deco"]').addEventListener('click', function(){ setTimeout(function(){ $('decoBox').hidden = pick.deco !== '指定車頭彩'; }, 0); });
   renderDeco();
 
-  // 迎娶地址「同集合地址」
-  function wedSame(){ return $('wedSame').checked; }
-  $('wedSame').addEventListener('change', function(){ var on = wedSame(); $('wedBox').hidden = on; if (on) $('wed').removeAttribute('data-req'); else $('wed').setAttribute('data-req', ''); $('wed').classList.remove('bad'); renderRoute(); });
-  // 其他停靠地點：按「新增」才出現，最多 5 個
-  var MAXS = 5;
-  function stopChips(box, cur){
-    box.innerHTML = '';
-    STOPS.concat(['__other']).forEach(function(t){ var b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.textContent = t === '__other' ? '其他' : t; b.dataset.v = t; b.setAttribute('aria-pressed', cur === t ? 'true' : 'false'); box.appendChild(b); });
-  }
+  // 2026-10-24 Nicole：A 固定集合地點；其他地點按「新增地點」，用下拉選單選類型（迎娶／入房／宴客／證婚／其他），依序編為 B、C、D…
+  var TYPES = ['迎娶地點', '入房地點', '宴客地點', '證婚地點', '其他地點'], LET = 'BCDEFG', MAXS = 6;
+  var PH = { '迎娶地點': '例如：女方家', '入房地點': '例如：男方家、飯店', '宴客地點': '例如：寬和宴會廳', '證婚地點': '例如：教堂、戶政事務所', '其他地點': '例如：祭祖、拍照景點' };
   function stopBlocks(){ return Array.prototype.slice.call($('stops').querySelectorAll('.stop')); }
-  function renumber(){ stopBlocks().forEach(function(d, i){ d.querySelector('.q').firstChild.innerHTML = '<span class="pk">' + 'CDEFG'.charAt(i) + '</span>停靠地點'; }); $('addStop').disabled = stopBlocks().length >= MAXS; $('addStop').textContent = stopBlocks().length >= MAXS ? '已達 5 個停靠地點' : '＋ 新增停靠地點'; }
-  function refreshStops(){ stopBlocks().forEach(function(d){ var cur = d.dataset.l || ''; if (cur && cur !== '__other' && STOPS.indexOf(cur) < 0) cur = d.dataset.l = ''; stopChips(d.querySelector('.chips'), cur); }); }
-  function addStop(){
+  function renumber(){ stopBlocks().forEach(function(d, i){ d.querySelector('.pk').textContent = LET.charAt(i); }); var full = stopBlocks().length >= MAXS; $('addStop').disabled = full; $('addStop').textContent = full ? '已達 6 個地點' : '＋ 新增地點'; }
+  function refreshStops(){}
+  function stopName(d){ return d.querySelector('.sName').value.trim(); }
+  function stopType(d){ return d.querySelector('.ptype').value; }
+  function addStop(type, quiet){
     if (stopBlocks().length >= MAXS) return;
-    var d = document.createElement('div'); d.className = 'field stop'; d.dataset.l = '';
-    d.innerHTML = '<div class="qrow"><label class="q"><span>停靠地點</span><small>選填</small></label><button type="button" class="rm">移除</button></div><input class="sAddr" placeholder="完整地址"><div class="help">這是什麼地點？</div><div class="chips"></div><input class="sub sOther" placeholder="地點名稱，例如：拍照景點" hidden>';
-    stopChips(d.querySelector('.chips'), '');
-    d.querySelector('.rm').onclick = function(){ var i = stopBlocks().indexOf(d), k = 'CDEFG'.charAt(i); route = route.filter(function(x){ return x !== k; }).map(function(x){ var j = 'CDEFG'.indexOf(x); return j > i ? 'CDEFG'.charAt(j - 1) : x; }); d.remove(); renumber(); renderRoute(); };
-    d.querySelector('.chips').addEventListener('click', function(e){
-      var b = e.target.closest('.chip'); if (!b) return; var v = b.dataset.v, on = d.dataset.l === v;
-      d.dataset.l = on ? '' : v; Array.prototype.forEach.call(this.children, function(c){ c.setAttribute('aria-pressed', !on && c === b ? 'true' : 'false'); });
-      var ot = d.querySelector('.sOther'); ot.hidden = d.dataset.l !== '__other'; if (!ot.hidden) ot.focus(); renderRoute();
-    });
-    d.querySelector('.sOther').addEventListener('input', renderRoute);
-    $('stops').appendChild(d); renumber(); renderRoute(); d.querySelector('.sAddr').focus();
+    var d = document.createElement('div'); d.className = 'field stop';
+    d.innerHTML = '<div class="qrow"><label class="q"><span class="pk"></span><select class="ptype" aria-label="地點類型">' + TYPES.map(function(t){ return '<option>' + t + '</option>'; }).join('') + '</select></label><button type="button" class="rm">移除</button></div><input class="sAddr" placeholder="完整地址"><input class="sub sName" placeholder="">';
+    var sel = d.querySelector('.ptype'); sel.value = type || '迎娶地點';
+    function ph(){ var t = sel.value; d.querySelector('.sName').placeholder = (t === '其他地點' ? '地點名稱（必填）' : '地點名稱（選填）') + '，' + PH[t]; }
+    ph(); sel.addEventListener('change', function(){ ph(); renderRoute(); });
+    d.querySelector('.rm').onclick = function(){ var i = stopBlocks().indexOf(d), k = LET.charAt(i); route = route.filter(function(x){ return x !== k; }).map(function(x){ var j = LET.indexOf(x); return j > i ? LET.charAt(j - 1) : x; }); d.remove(); renumber(); renderRoute(); };
+    d.querySelector('.sName').addEventListener('input', renderRoute);
+    $('stops').appendChild(d); renumber(); renderRoute(); if (!quiet) sel.focus();
   }
-  function stopVals(){ return stopBlocks().map(function(d){ var l = d.dataset.l === '__other' ? d.querySelector('.sOther').value.trim() : (d.dataset.l || ''); return { a: d.querySelector('.sAddr').value.trim(), l: l }; }).filter(function(x){ return x.a || x.l; }); }
-  $('addStop').onclick = addStop;
+  $('addStop').onclick = function(){ var has = stopBlocks().some(function(d){ return stopType(d) === '迎娶地點'; }); addStop(has ? '宴客地點' : '迎娶地點'); };
 
-  // 路線：依序點地點，可倒退、清除、或選「行前一週確認」
-  function places(){   // A 集合、B 迎娶（同集合時不顯示）、C 起依序為新增的停靠地點
-    var L = [{ k: 'A', n: val('meetL') || '集合地址' }];
-    if (!wedSame()) L.push({ k: 'B', n: val('wedL') || '迎娶地址' });
-    stopBlocks().forEach(function(d, i){ var l = d.dataset.l === '__other' ? d.querySelector('.sOther').value.trim() : (d.dataset.l || ''); L.push({ k: 'CDEFG'.charAt(i), n: l || '停靠地點' }); });
+  // 路線：依序點地點，可倒退、清除、繞圈，或選「行前一週確認」
+  function places(){
+    var L = [{ k: 'A', n: val('meetL') || '集合地點' }];
+    stopBlocks().forEach(function(d, i){ var t = stopType(d), nm = stopName(d); L.push({ k: LET.charAt(i), n: nm || t }); });
     return L;
   }
   function pname(k){ var p = places().filter(function(x){ return x.k === k; })[0]; return p ? p.n : ''; }
   function renderRoute(){
     var box = $('routeChips'); box.innerHTML = '';
-    var ks = places().map(function(p){ return p.k; }); route = route.filter(function(k){ return ks.indexOf(k) >= 0; });
+    var ks = places().map(function(p){ return p.k; }).concat(['繞圈']); route = route.filter(function(k){ return ks.indexOf(k) >= 0; });
     places().forEach(function(p){ var b = document.createElement('button'); b.type = 'button'; b.className = 'chip rchip'; b.innerHTML = '<b>' + p.k + '</b><small>' + p.n.replace(/[&<>]/g, '') + '</small>'; b.disabled = later; b.onclick = function(){ route.push(p.k); show(); }; box.appendChild(b); });
     show();
   }
-  function routeText(){ return route.map(function(k){ return k + '（' + pname(k) + '）'; }).join(' > '); }
+  function tok(k, map){ return k === '繞圈' ? '繞圈' : (map && map[k] || k) + '（' + pname(k) + '）'; }
+  function routeText(map){ return route.map(function(k){ return tok(k, map); }).join(' > '); }
   function show(){
     var s = $('routeShow');
     if (later) s.innerHTML = '<span>行前一週確認</span>';
     else if (!route.length) s.innerHTML = '<span class="ph">還沒選擇路線</span>';
     else s.innerHTML = route.map(function(k){ return '<span>' + k + '</span>'; }).join('<span class="arrow">›</span>');
-    $('rBack').disabled = later || !route.length; $('rClear').disabled = later || !route.length;
+    $('rBack').disabled = later || !route.length; $('rClear').disabled = later || !route.length; $('rLoop').disabled = later || !route.length || route[route.length - 1] === '繞圈';
     $('rLater').setAttribute('aria-pressed', later ? 'true' : 'false');
     Array.prototype.forEach.call($('routeChips').children, function(b){ b.disabled = later; });
   }
   $('rBack').onclick = function(){ route.pop(); show(); };
   $('rClear').onclick = function(){ route = []; show(); };
+  $('rLoop').onclick = function(){ if (route.length && route[route.length - 1] !== '繞圈'){ route.push('繞圈'); show(); } };
   $('rLater').onclick = function(){ later = !later; show(); };
+  addStop('迎娶地點', true);
   renderRoute();
 
   function fail(msg, el){ $('err').textContent = msg; if (el){ el.classList.add('bad'); el.scrollIntoView({ block: 'center', behavior: 'smooth' }); } }
@@ -323,9 +318,15 @@ button.go:disabled{opacity:.6}
     var sign = pick.deco === '指定車頭彩' && $('signOn').checked ? $('signName').value.trim() : '';
     if (pick.deco === '指定車頭彩' && $('signOn').checked && !sign) return fail('請填寫木牌上的英文名字', $('signName'));
     var body = { action: 'wedForm', hp: $('hp').value, no: $('no').value.trim(), groom: $('groom').value.trim(), bride: $('bride').value.trim(), role: role, rel: rel, phone: $('phone').value.trim(),
-      start: $('start').value, end: $('end').value, meet: $('meet').value.trim(), wed: wedSame() ? $('meet').value.trim() : $('wed').value.trim(),
-      route: later ? '行前一週確認' : routeText(), meetL: val('meetL'), wedL: wedSame() ? val('meetL') : val('wedL'), dayFlow: Array.prototype.filter.call($('dayFlow').children, function(c){ return c.getAttribute('aria-pressed') === 'true'; }).map(function(c){ return c.textContent; }).join('、'), note: $('note').value.trim(), cane: pick.cane, deco: pick.deco, decoStyle: dz ? (dz.code + (dz.name || DECO_N[dz.code] ? '. ' + (dz.name || DECO_N[dz.code]) : '')) : '', decoSign: sign, decoFee: dz ? String(decoFee()) : '' };
-    var SV = stopVals(); for (var si = 0; si < SV.length; si++){ if (!SV[si].a) return fail('請填寫停靠地點 ' + 'CDEFG'.charAt(si) + ' 的地址', stopBlocks()[si].querySelector('.sAddr')); body['o' + (si + 1)] = SV[si].a; body['o' + (si + 1) + 'L'] = SV[si].l; }
+      start: $('start').value, end: $('end').value, meet: $('meet').value.trim(), wed: '',
+      route: '', meetL: val('meetL'), wedL: '', dayFlow: Array.prototype.filter.call($('dayFlow').children, function(c){ return c.getAttribute('aria-pressed') === 'true'; }).map(function(c){ return c.textContent; }).join('、'), note: $('note').value.trim(), cane: pick.cane, deco: pick.deco, decoStyle: dz ? (dz.code + (dz.name || DECO_N[dz.code] ? '. ' + (dz.name || DECO_N[dz.code]) : '')) : '', decoSign: sign, decoFee: dz ? String(decoFee()) : '' };
+    /* 2026-10-24 地點對應：第一個「迎娶地點」→ 系統的 B（迎娶地點）；沒有迎娶就以集合地點當迎娶；其他地點依序 → 停靠地點 1–5（名稱存成「類型・名稱」）；路線代號跟著換成系統上的代號 */
+    var SB = stopBlocks(), wi = -1, map = { A: 'A' }, oi = 0;
+    for (var si = 0; si < SB.length; si++){ if (!SB[si].querySelector('.sAddr').value.trim()) return fail('請填寫地點 ' + LET.charAt(si) + ' 的地址', SB[si].querySelector('.sAddr')); if (stopType(SB[si]) === '其他地點' && !stopName(SB[si])) return fail('請填寫地點 ' + LET.charAt(si) + ' 的名稱', SB[si].querySelector('.sName')); if (wi < 0 && stopType(SB[si]) === '迎娶地點') wi = si; }
+    if (wi >= 0){ body.wed = SB[wi].querySelector('.sAddr').value.trim(); body.wedL = stopName(SB[wi]); map[LET.charAt(wi)] = 'B'; }
+    else { body.wed = body.meet; body.wedL = '同集合地點'; }
+    SB.forEach(function(d, si){ if (si === wi) return; oi++; var t = stopType(d), nm = stopName(d); body['o' + oi] = d.querySelector('.sAddr').value.trim(); body['o' + oi + 'L'] = t === '其他地點' ? nm : (nm ? t + '・' + nm : t); map[LET.charAt(si)] = 'CDEFG'.charAt(oi - 1); });
+    body.route = later ? '行前一週確認' : routeText(map);
     if (PREVIEW){ $('f').hidden = true; $('done').hidden = false; $('done').querySelector('p').textContent = '（預覽模式：資料沒有送出）\n\n' + Object.keys(body).filter(function(k){ return k !== 'action' && k !== 'hp' && body[k]; }).map(function(k){ return k + '：' + body[k]; }).join('\n'); window.scrollTo(0, 0); return; }
     var go = $('go'); go.disabled = true; go.textContent = '送出中…';
     /* 2026-10-20 客人反映一直「送出中」：系統忙時要比較久 → 15 秒後提示別關頁面；100 秒還沒回應就停下來，請客人先不要重填、直接回 LINE */
