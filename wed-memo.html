@@ -104,6 +104,8 @@ a.line{display:flex;align-items:center;justify-content:center;gap:22px;backgroun
     <div class="memo" id="shMemo"></div>
     <!-- 2026-10-20 Nicole：用車確認單也顯示尾款與付款方式；分享時客人自己選要不要包含款項 -->
     <div class="memo" id="shPay" hidden style="margin-top:14px"></div>
+    <!-- 2026-10-24 Nicole：確認單也要看得到匯款帳號（選現金臨時改匯款也找得到） -->
+    <div class="d-bank" id="shBank" hidden><div class="lbl" id="shBankLbl">匯款帳戶</div><pre id="shBankTxt"></pre><button type="button" id="shCopyAcct">複製帳號</button></div>
     <label class="chk" id="shPayWrap" hidden style="margin-top:14px"><input type="checkbox" id="shPayChk"><span>分享時包含款項（尾款金額、付款方式）</span></label>
     <a class="ghost shbtn" id="shLine" target="_blank" rel="noopener">分享給 LINE 好友</a>
     <p class="prev">如有任何問題，請與新人或禮車負責人聯繫。</p>
@@ -243,6 +245,9 @@ a.line{display:flex;align-items:center;justify-content:center;gap:22px;backgroun
   $('copyAcct').onclick = function(){ var t = $('dBankTxt').textContent, m = t.match(/帳號[：:\s]*([\d\-\s]{8,})/), v = m ? m[1].replace(/\D/g, '') : t, b = this;
     var ok = function(){ b.textContent = '已複製 ✓'; setTimeout(function(){ b.textContent = '複製帳號'; }, 1800); };
     if (navigator.clipboard) navigator.clipboard.writeText(v).then(ok, function(){ window.prompt('請複製帳號', v); }); else window.prompt('請複製帳號', v); };
+  $('shCopyAcct').onclick = function(){ var t = $('shBankTxt').textContent, m = t.match(/帳號[：:\s]*([\d\-\s]{8,})/), v = m ? m[1].replace(/\D/g, '') : t, b = this;
+    var ok = function(){ b.textContent = '已複製 ✓'; setTimeout(function(){ b.textContent = '複製帳號'; }, 1800); };
+    if (navigator.clipboard) navigator.clipboard.writeText(v).then(ok, function(){ window.prompt('請複製帳號', v); }); else window.prompt('請複製帳號', v); };
   function paidDone(at){ $('paidForm').hidden = true; $('paidLead').hidden = true; $('paidOk').hidden = false; $('paidOk').textContent = '✓ 已收到你們的匯款資訊' + (at ? '（' + tm(at) + '）' : '') + '，對帳後就完成了，謝謝您！'; }
   $('paidGo').onclick = function(){
     var l5 = $('last5').value.replace(/\D/g, ''), f = $('shot').files[0]; $('paidErr').textContent = '';
@@ -282,7 +287,7 @@ a.line{display:flex;align-items:center;justify-content:center;gap:22px;backgroun
         var hw = P.how === 'cash' ? '用車當天付現金（請將尾款及司機禮包成一包，交給現場禮車負責人，可由親友轉交）' : P.how === 'transfer' ? '提前匯款（最晚用車前一天匯款完成，請勿於用車當天匯款）' : '';
         var st = P.done ? '✓ 尾款已收到，謝謝您' : (P.how === 'transfer' && P.sent ? '已回傳匯款資訊，對帳中' : '');
         $('shPay').textContent = ['款項', P.mon ? '月結，不用支付尾款' : '尾款 ' + money(P.bal) + '（含司機禮）', hw ? '付款方式：' + hw : '', st, P.ot || ''].filter(Boolean).join('\n');
-        $('shPay').hidden = false; $('shPayWrap').hidden = false;
+        $('shPay').hidden = false; $('shPayWrap').hidden = false; if (!P.mon && !P.done && P.bank){ $('shBankLbl').textContent = P.how === 'cash' ? '如需改用匯款，匯款帳戶如下' : '匯款帳戶'; $('shBankTxt').textContent = P.bank; $('shBank').hidden = false; }
       }
       var shareUrl = function(){ var u = new URL(location.href); u.searchParams.delete('p'); if (!$('shPayChk').checked) u.searchParams.set('p', '0'); return u.toString(); };
       var setLine = function(){ $('shLine').href = 'https://line.me/R/share?text=' + encodeURIComponent('好好禮車｜用車確認單' + (j.date ? '（' + md(j.date) + '）' : '') + '\n' + (noPay ? location.href : shareUrl())); };
