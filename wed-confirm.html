@@ -34,7 +34,7 @@ textarea{min-height:90px;resize:vertical}
 input:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
 input[readonly]{background:transparent;color:var(--muted)}
 .bad{border-color:var(--warn)!important;background:var(--warn-soft)!important}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.ptf .ptn{margin-bottom:8px}.ptf .ptn input{font-size:15px}.ptT{font-weight:700}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.ptf .ptn{margin-bottom:8px}.ptc{border:1px solid var(--line,#e6dccb);border-radius:14px;padding:12px;margin-bottom:10px;background:var(--card,#fff)}.ptc .ph{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-weight:700}.ptc .ph button{border:0;background:none;color:#A0453A;font-size:14px;cursor:pointer}.ptc .ptn{margin-bottom:8px}.ptf .ptn input{font-size:15px}.ptT{font-weight:700}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{font:inherit;font-size:15px;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:7px 15px;min-height:40px;cursor:pointer}
 .chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
@@ -149,18 +149,17 @@ button.go:disabled{opacity:.6}
     <div class="field" id="c2Box" hidden><label class="q">第二聯絡人是<b>*</b></label>
       <div class="chips" data-pick="crole"><button type="button" class="chip">新娘</button><button type="button" class="chip">親友</button><button type="button" class="chip">婚顧／主持人</button><button type="button" class="chip">其他</button></div></div>
     <div class="field" id="crelBox" hidden><label class="q" for="crel">是新人的什麼人<b>*</b></label><input id="crel" maxlength="30" placeholder="例：伴娘車駕駛、新郎哥哥、伴郎"></div>
-
-    <div class="sec"><h2><i>02</i>地址與時間</h2><p>地址請填完整（含門牌號碼）。地點名稱可以自己改，例如把「女方家」改成「○○飯店」，備註寫「女方家」。</p></div>
+    <div class="sec"><h2><i>02</i>地點與時間</h2><p>先填集合地點，再按「＋ 新增地點」把當天會到的地方一個一個加進來（例如男方家、女方家、飯店、餐廳），最後再排時間和行程。地址請填完整（含門牌號碼）。</p></div>
     <div class="field"><label class="q">當天行程<b>*</b></label>
       <div class="chips" data-pick="mode"><button type="button" class="chip">迎娶（男方家 ⇄ 女方家）</button><button type="button" class="chip">單點繞圈</button></div></div>
-    <div class="field ptf"><label class="q" for="meet"><span class="pk">A</span><span class="ptT" data-pt="A">男方家</span><b>*</b></label><div class="row2 ptn"><input id="meetL" maxlength="20" placeholder="地點名稱（可修改）" aria-label="A 地點名稱"><input id="meetN" maxlength="30" placeholder="備註（選填）" aria-label="A 地點備註"></div><input id="meet" data-req placeholder="地址（含門牌號碼）"></div>
+    <!-- 2026-11-03 Nicole：A 永遠是集合地點；其他地點用「＋ 新增地點」自己加（地址／地點名稱／備註），再排流程 -->
+    <div class="field ptf"><label class="q" for="meet"><span class="pk">A</span>集合地點<b>*</b></label><div class="row2 ptn"><input id="meetL" maxlength="20" placeholder="地點名稱，例：男方家" aria-label="集合地點名稱"><input id="meetN" maxlength="30" placeholder="備註（選填）" aria-label="集合地點備註"></div><input id="meet" data-req placeholder="地址（含門牌號碼）"></div>
     <div class="field"><label class="q">是否訂結一起<b>*</b></label><div class="help">訂婚（文定）和結婚（迎娶）在同一天。</div>
       <div class="chips" data-pick="combo"><button type="button" class="chip">是</button><button type="button" class="chip">否</button></div></div>
     <div id="wedBox">
-    <div class="field ptf"><label class="q" for="wed"><span class="pk">B</span><span class="ptT" data-pt="B">女方家</span><b>*</b></label><div class="row2 ptn"><input id="wedL" maxlength="20" placeholder="地點名稱（可修改）" aria-label="B 地點名稱"><input id="wedN" maxlength="30" placeholder="備註（選填）" aria-label="B 地點備註"></div><input id="wed" data-req placeholder="地址（含門牌號碼）"></div>
-    <div hidden><input id="start" type="time"><input id="back" type="time"></div><!-- 2026-10-20 改用下面「當天流程」一段一行，這兩格只留著相容舊資料 -->
-    <div class="field"><label class="q">是否需要接送至餐廳<b>*</b></label>
-      <div class="chips" data-pick="restYN"><button type="button" class="chip">需要</button><button type="button" class="chip">不需要</button></div></div>
+      <div class="field"><label class="q">其他地點<b>*</b></label><div class="help">當天禮車會去的每個地方都加一個，例如：女方家、迎娶的飯店、餐廳。</div>
+        <div id="pts"></div><button type="button" class="nl-add" id="ptAdd">＋ 新增地點</button></div>
+      <div hidden><input id="wed"><input id="start" type="time"><input id="back" type="time"><input id="restT" type="time"><input id="restAddr"><input id="dAddr"></div><!-- 舊欄位只留著相容舊資料 -->
     </div>
     <div id="loopBox" hidden>
       <div class="field"><label class="q" for="loop1">當天預計第一圈時間<b>*</b></label><input id="loop1" type="time" data-req><div class="help" style="font-size:13px;margin:0">司機會提前 20 分鐘集合</div></div>
@@ -168,14 +167,9 @@ button.go:disabled{opacity:.6}
         <div class="chips" data-pick="loop2YN"><button type="button" class="chip">是</button><button type="button" class="chip">否</button></div></div>
       <div class="field" id="loop2Box" hidden><label class="q" for="loop2T">第二圈預計時間<b>*</b></label><input id="loop2T" type="time"></div>
     </div>
-    <div id="restBox" hidden>
-      <div hidden><input id="restT" type="time"></div>
-      <div class="field ptf"><label class="q" for="restAddr"><span class="pk">C</span><span class="ptT" data-pt="C">餐廳</span><b>*</b></label><div class="row2 ptn"><input id="restL" maxlength="20" placeholder="地點名稱（可修改）" aria-label="C 地點名稱"><input id="restN" maxlength="30" placeholder="備註（選填）" aria-label="C 地點備註"></div><input id="restAddr" placeholder="例如：○○飯店 台北市…"></div>
-    </div>
     <div id="segBox"><!-- 2026-10-20 Nicole：流程時間改成一段一行（時間＋從哪到哪），送出前整理給客人看 -->
-      <div class="field"><label class="q">當天流程<b>*</b></label><div class="help">一段一行：幾點從哪裡出發、開到哪裡，照當天的順序由早到晚。多一段按「＋ 新增一段」；在同一個地點附近繞一圈，起點、終點選一樣就好。</div>
+      <div class="field"><label class="q">當天流程<b>*</b></label><div class="help">地點都加好之後，再排流程：一段一行，幾點從哪裡出發、開到哪裡，照當天的順序由早到晚。多一段按「＋ 新增一段」；在同一個地點附近繞一圈，起點、終點選一樣就好。</div>
         <div id="segs"></div><button type="button" class="nl-add" id="segAdd">＋ 新增一段</button></div>
-      <div class="field ptf" id="dBox" hidden><label class="q" for="dAddr"><span class="pk">D</span><span class="ptT" data-pt="D">其他地點</span><b>*</b></label><div class="row2 ptn"><input id="dL" maxlength="20" placeholder="地點名稱（可修改）" aria-label="D 地點名稱"><input id="dN" maxlength="30" placeholder="備註（選填）" aria-label="D 地點備註"></div><input id="dAddr" placeholder="例如：○○公園 台北市…"></div>
       <div class="note-tip" id="segSum" hidden style="white-space:pre-line"></div>
     </div>
     <div class="note-tip" id="hoursTip" hidden></div>
@@ -245,10 +239,9 @@ button.go:disabled{opacity:.6}
     pick[key] = v || '';
     var loop = pick.mode === '單點繞圈';
     $('wedBox').hidden = loop; $('loopBox').hidden = !loop;
-    $('restBox').hidden = loop || pick.restYN !== '需要'; $('loop2Box').hidden = !loop || pick.loop2YN !== '是';
+    $('segBox').hidden = loop; $('loop2Box').hidden = !loop || pick.loop2YN !== '是';
     $('frBox').hidden = pick.friend !== '有';
     if (key === 'friendN' || key === 'friend') renderFr();
-    if (key === 'restYN' && typeof segRest === 'function' && segReady) segRest();
     $('hostBox').hidden = pick.host !== '有';
     c2Ui();
     fireUi();
@@ -258,8 +251,8 @@ button.go:disabled{opacity:.6}
   var firePick = [];
   function firePts(){
     if (pick.mode === '單點繞圈') return [['A', '繞圈回到 A 點放炮', $('meet').value]];
-    var L = [['B', '抵達 B 點（' + PN.B + '）放炮', $('wed').value], ['A', '迎娶回 A 點（' + PN.A + '）放炮', $('meet').value]];
-    if (pick.restYN === '需要') L.push(['C', '抵達 C 點（' + PN.C + '）放炮', $('restAddr').value]);
+    var L = PTS.map(function(z, i){ var k = PTL.charAt(i); return [k, '抵達 ' + k + ' 點（' + PN[k] + '）放炮', z.addr]; });
+    L.push(['A', '回到 A 點（' + PN.A + '）放炮', $('meet').value]);
     return L;
   }
   function fireUi(){
@@ -312,14 +305,27 @@ button.go:disabled{opacity:.6}
   }
   ['start', 'back', 'restT', 'loop1', 'loop2T'].forEach(function(id){ $(id).addEventListener('input', hoursTip); });
   // 2026-10-20 Nicole：當天流程一段一行（時間＋起點→終點），取代原本的出發／回男方家／去餐廳三格
-  var segs = [], PN0 = { A: '男方家', B: '女方家', C: '餐廳', D: '其他地點' }, PN = { A: '男方家', B: '女方家', C: '餐廳', D: '其他地點' }, PTID = { A: 'meetL', B: 'wedL', C: 'restL', D: 'dL' };
-  /* 2026-11-03 Nicole：每個地點可以自己改名稱、加備註（例：薇米文旅集合／女方家），流程與放炮選單跟著顯示 */
-  function ptSync(){ Object.keys(PTID).forEach(function(k){ var e = $(PTID[k]); PN[k] = (e && e.value.trim()) || PN0[k]; Array.prototype.forEach.call(document.querySelectorAll('.ptT[data-pt="' + k + '"]'), function(t){ t.textContent = PN[k]; }); }); }
-  ['meetL', 'wedL', 'restL', 'dL'].forEach(function(id){ var e = $(id); if (e) e.addEventListener('input', function(){ ptSync(); try { if (segReady) { segRead(); segRender(); } } catch (x) {} try { fireUi(); } catch (x) {} }); });
-  function segPts(){ var L = ['A', 'B']; if (pick.restYN === '需要') L.push('C'); L.push('D'); return L; }
+  var segs = [], PN = { A: '集合地點' }, PTS = [], PTL = 'BCDEFGHIJKLMN';
+  /* 2026-11-03 Nicole：A 永遠是集合地點；其他地點用「＋ 新增地點」加（地址／地點名稱／備註），流程與放炮選單跟著顯示 */
+  function ptName(i){ var z = PTS[i] || {}; return z.name || ('地點 ' + PTL.charAt(i)); }
+  function ptSync(){ PN = { A: $('meetL').value.trim() || '集合地點' }; PTS.forEach(function(z, i){ PN[PTL.charAt(i)] = ptName(i); }); Array.prototype.forEach.call(document.querySelectorAll('#pts .ptc'), function(c, i){ var t = c.querySelector('.pn'); if (t) t.textContent = ptName(i); }); }
+  function ptsRender(){
+    $('pts').innerHTML = PTS.map(function(z, i){ var k = PTL.charAt(i); return '<div class="ptc" data-pti="' + i + '"><div class="ph"><span><span class="pk">' + k + '</span><span class="pn">' + esc(ptName(i)) + '</span></span><button type="button" data-ptdel="' + i + '">✕ 刪除</button></div>' +
+      '<div class="row2 ptn"><input data-pf="name" maxlength="20" placeholder="地點名稱，例：女方家、○○飯店" value="' + esc(z.name) + '" aria-label="' + k + ' 地點名稱"><input data-pf="note" maxlength="30" placeholder="備註（選填）" value="' + esc(z.note) + '" aria-label="' + k + ' 地點備註"></div>' +
+      '<input data-pf="addr" placeholder="地址（含門牌號碼）" value="' + esc(z.addr) + '" aria-label="' + k + ' 地址"></div>'; }).join('');
+    $('ptAdd').hidden = PTS.length >= PTL.length; ptSync();
+  }
+  function ptsChanged(){ ptSync(); try { if (segReady){ segRead(); segRender(); } } catch (x) {} try { fireUi(); } catch (x) {} }
+  $('pts').addEventListener('input', function(e){ var c = e.target.closest('[data-pti]'), f = e.target.getAttribute('data-pf'); if (!c || !f) return; PTS[+c.getAttribute('data-pti')][f] = e.target.value; e.target.classList.remove('bad'); if (f === 'name') ptsChanged(); else if (f === 'addr') { try { fireUi(); } catch (x) {} } });
+  $('pts').addEventListener('click', function(e){ var b = e.target.closest('[data-ptdel]'); if (!b) return; var i = +b.getAttribute('data-ptdel'), k = PTL.charAt(i); segRead();
+    segs = segs.filter(function(z){ return z.f !== k && z.to !== k; }).map(function(z){ var mv = function(v){ var x = PTL.indexOf(v); return x > i ? PTL.charAt(x - 1) : v; }; return { t: z.t, f: mv(z.f), to: mv(z.to) }; });
+    PTS.splice(i, 1); ptsRender(); ptsChanged(); });
+  $('ptAdd').addEventListener('click', function(){ PTS.push({ name: '', note: '', addr: '' }); ptsRender(); ptsChanged(); var L = document.querySelectorAll('#pts .ptc'); if (L.length) L[L.length - 1].querySelector('input').focus(); });
+  $('meetL').addEventListener('input', ptsChanged);
+  function segPts(){ return ['A'].concat(PTS.map(function(z, i){ return PTL.charAt(i); })); }
   function segName(v){ return v ? v + ' ' + PN[v] : ''; }
-  function segParse(t){ return String(t || '').split('\n').map(function(l){ var m = /^(\d{1,2}:\d{2})?\s*([A-D])\s*→\s*([A-D])$/.exec(l.trim()); return m ? { t: m[1] || '', f: m[2], to: m[3] } : null; }).filter(Boolean); }
-  function segDefault(p){ p = p || {}; var L = [{ t: p.start || '', f: 'A', to: 'B' }, { t: p.back || '', f: 'B', to: 'A' }]; if (p.restYN === '需要' || pick.restYN === '需要') L.push({ t: p.restT || '', f: 'A', to: 'C' }); return L; }
+  function segParse(t){ return String(t || '').split('\n').map(function(l){ var m = /^(\d{1,2}:\d{2})?\s*([A-N])\s*→\s*([A-N])$/.exec(l.trim()); return m ? { t: m[1] || '', f: m[2], to: m[3] } : null; }).filter(Boolean); }
+  function segDefault(){ var L = [], P = segPts(); for (var i = 1; i < P.length; i++) L.push({ t: '', f: P[i - 1], to: P[i] }); if (!L.length) L.push({ t: '', f: 'A', to: '' }); return L; }
   function segRead(){ Array.prototype.forEach.call(document.querySelectorAll('#segs .seg'), function(r, i){ var z = segs[i]; if (!z) return; z.t = r.querySelector('input').value; var S = r.querySelectorAll('select'); z.f = S[0].value; z.to = S[1].value; }); }
   function segRender(){
     var P = segPts(), box = $('segs'); if (!segs.length) segs = segDefault();
@@ -330,7 +336,6 @@ button.go:disabled{opacity:.6}
     segAfter();
   }
   function segAfter(){
-    $('dBox').hidden = !segs.some(function(z){ return z.f === 'D' || z.to === 'D'; });
     var ok = segs.filter(function(z){ return z.t && z.f && z.to; }), el = $('segSum');
     if (!ok.length){ el.hidden = true; } else {
       var L = ok.map(function(z){ return z.t + '　' + (z.f === z.to ? PN[z.f] + '附近繞一圈' : PN[z.f] + ' → ' + PN[z.to]); });
@@ -338,20 +343,18 @@ button.go:disabled{opacity:.6}
       el.hidden = false; el.textContent = '整理好的流程，請再看一次：\n' + L.join('\n');
     }
     var st = segs[0] && segs[0].t || ''; $('start').value = st;
-    var bk = segs.filter(function(z){ return z.f === 'B' && z.to === 'A'; })[0]; $('back').value = bk ? bk.t : '';
-    var rc = segs.filter(function(z){ return z.to === 'C'; })[0]; $('restT').value = rc ? rc.t : '';
+    var bk = segs.filter(function(z){ return z.f !== 'A' && z.to === 'A'; })[0]; $('back').value = bk ? bk.t : '';
     hoursTip();
   }
   $('segs').addEventListener('input', function(){ segRead(); segAfter(); });
   $('segs').addEventListener('change', function(e){ segRead(); if (e.target.tagName === 'SELECT') segRender(); else segAfter(); Array.prototype.forEach.call(document.querySelectorAll('#segs .seg'), function(r){ r.classList.remove('bad'); }); });
   $('segs').addEventListener('click', function(e){ var b = e.target.closest('[data-segdel]'); if (!b) return; segRead(); segs.splice(+b.getAttribute('data-segdel'), 1); segRender(); });
   $('segAdd').addEventListener('click', function(){ segRead(); var last = segs[segs.length - 1] || {}; segs.push({ t: '', f: last.to || '', to: '' }); segRender(); var L = document.querySelectorAll('#segs .seg input'); if (L.length) L[L.length - 1].focus(); });
-  function segRest(){ if (!$('segs')) return; segRead(); if (pick.restYN === '需要'){ if (!segs.some(function(z){ return z.to === 'C'; })){ var last = segs[segs.length - 1] || {}; segs.push({ t: '', f: last.to || 'A', to: 'C' }); } } else segs = segs.filter(function(z){ return z.f !== 'C' && z.to !== 'C'; }); segRender(); }
+  function segRest(){}
   function segCheck(){   // 回傳錯誤訊息；空字串＝沒問題
     segRead(); var bad = -1, msg = '';
     segs.forEach(function(z, i){ if (bad < 0 && !(z.t && z.f && z.to)){ bad = i; msg = '第 ' + (i + 1) + ' 段的時間或地點還沒選'; } });
     if (bad < 0) for (var i = 1; i < segs.length; i++){ if (mins(segs[i].t) <= mins(segs[i - 1].t)){ bad = i; msg = '第 ' + (i + 1) + ' 段的時間（' + segs[i].t + '）沒有比第 ' + i + ' 段（' + segs[i - 1].t + '）晚，請確認順序和時間'; break; } }
-    if (bad < 0 && pick.restYN === '需要' && !segs.some(function(z){ return z.to === 'C'; })){ bad = segs.length - 1; msg = '要接送到餐廳的話，流程裡要有一段開到「C 餐廳」'; }
     if (bad >= 0){ var r = document.querySelectorAll('#segs .seg')[bad]; if (r){ r.classList.add('bad'); r.scrollIntoView({ block: 'center', behavior: 'smooth' }); } }
     return msg;
   }
@@ -366,14 +369,21 @@ button.go:disabled{opacity:.6}
       (j.cars ? '<div><span class="k">禮車</span>' + esc(j.cars) + '</div>' : '') +
       (PLAN ? '<div><span class="k">方案</span>' + PLAN + ' 小時</div>' : '');
     var p = j.pre || {};
-    ['name', 'phone', 'meet', 'wed', 'start', 'back', 'restT', 'restAddr', 'loop1', 'loop2T', 'note', 'hostName', 'hostPhone', 'dAddr', 'crel', 'c2name', 'c2phone', 'meetL', 'meetN', 'wedL', 'wedN', 'restL', 'restN', 'dL', 'dN'].forEach(function(id){ if (p[id]) $(id).value = p[id]; });
+    ['name', 'phone', 'meet', 'wed', 'start', 'back', 'restT', 'restAddr', 'loop1', 'loop2T', 'note', 'hostName', 'hostPhone', 'dAddr', 'crel', 'c2name', 'c2phone', 'meetL', 'meetN'].forEach(function(id){ if (p[id] && $(id)) $(id).value = p[id]; });
     if (j.groom && p.name && p.name.replace(/\s/g, '') !== j.groom.replace(/\s/g, '') && !p.c2name){ $('c2name').value = p.name; $('c2phone').value = p.phone || ''; $('name').value = j.groom; $('phone').value = ''; }   // 之前填的是別人 → 改放第二聯絡人，請新人補新郎電話
     else if (j.groom && !p.name) $('name').value = j.groom;
     ptSync();
     setPick('crole', p.crole);
     if (window.noteRender) noteRender();
     setPick('mode', p.mode === 'loop' ? '單點繞圈' : '迎娶（男方家 ⇄ 女方家）'); setPick('combo', p.combo); setPick('restYN', p.restYN);
-    segs = segParse(p.segs); if (!segs.length) segs = segDefault(p); segReady = true; segRender(); setPick('loop2YN', p.loop2YN); setPick('cane', p.cane);
+    PTS = []; var ptsOk = false; try { var pp = JSON.parse(p.pts || '[]'); if (Array.isArray(pp) && pp.length){ PTS = pp.map(function(z){ return { name: z.name || '', note: z.note || '', addr: z.addr || '' }; }); ptsOk = true; } } catch (x) {}
+    var oldSeg = String(p.segs || '');
+    if (!ptsOk){ var mp = {}; if (p.wed){ PTS.push({ name: p.wedL || '女方家', note: p.wedN || '', addr: p.wed }); mp.B = PTL.charAt(PTS.length - 1); }
+      if (p.restAddr && (p.restYN === '需要' || !p.restYN)){ PTS.push({ name: p.restL || '餐廳', note: p.restN || '', addr: p.restAddr }); mp.C = PTL.charAt(PTS.length - 1); }
+      if (p.dAddr){ PTS.push({ name: p.dL || '其他地點', note: p.dN || '', addr: p.dAddr }); mp.D = PTL.charAt(PTS.length - 1); }
+      oldSeg = oldSeg.replace(/([B-D])(?=\s*→)|(?:→\s*)([B-D])/g, function(m0, a, b){ var v = a || b; return m0.replace(v, mp[v] || v); }); }
+    ptsRender();
+    segs = segParse(oldSeg); if (!segs.length) segs = segDefault(); segReady = true; segRender(); setPick('loop2YN', p.loop2YN); setPick('cane', p.cane);
     if (p.friendPos) frPos = String(p.friendPos).split(',').map(function(v){ return parseInt(v, 10) || 0; });
     setPick('friend', p.friend); setPick('friendN', p.friendN ? p.friendN + ' 台' : '');
     firePick = String(p.fire || '').split(',').filter(String); setPick('fireType', p.fireType); setPick('fireYN', p.fireYN); setPick('host', p.host);
@@ -385,9 +395,10 @@ button.go:disabled{opacity:.6}
     e.preventDefault(); var miss = [];
     var loop = pick.mode === '單點繞圈';
     Array.prototype.forEach.call(document.querySelectorAll('[data-req]'), function(el){ if (el.closest('[hidden]')){ el.classList.remove('bad'); return; } var ok = !!el.value.trim(); el.classList.toggle('bad', !ok); if (!ok) miss.push(el); });
-    (loop ? ['who', 'combo', 'loop2YN', 'friend', 'cane', 'fireYN'] : ['who', 'combo', 'restYN', 'friend', 'cane', 'fireYN']).concat($('c2Box').hidden ? [] : ['crole']).forEach(function(kk){ var g = document.querySelector('[data-pick="' + kk + '"]'); var ok = !!pick[kk]; g.classList.toggle('bad', !ok); if (!ok) miss.push(g); });
+    (loop ? ['who', 'combo', 'loop2YN', 'friend', 'cane', 'fireYN'] : ['who', 'combo', 'friend', 'cane', 'fireYN']).concat($('c2Box').hidden ? [] : ['crole']).forEach(function(kk){ var g = document.querySelector('[data-pick="' + kk + '"]'); var ok = !!pick[kk]; g.classList.toggle('bad', !ok); if (!ok) miss.push(g); });
     if (loop && pick.loop2YN === '是' && !$('loop2T').value){ $('loop2T').classList.add('bad'); miss.push($('loop2T')); }
-    if (!loop && pick.restYN === '需要') ['restAddr'].forEach(function(id){ var el = $(id), ok = !!el.value.trim(); el.classList.toggle('bad', !ok); if (!ok) miss.push(el); });
+    if (!loop){ if (!PTS.length){ $('ptAdd').classList.add('bad'); miss.push($('ptAdd')); } else $('ptAdd').classList.remove('bad');
+      Array.prototype.forEach.call(document.querySelectorAll('#pts [data-pf="addr"]'), function(el){ var ok = !!el.value.trim(); el.classList.toggle('bad', !ok); if (!ok) miss.push(el); }); }
     if (!$('crelBox').hidden && !$('crel').value.trim()){ $('crel').classList.add('bad'); miss.push($('crel')); }
     if (!$('c2Box').hidden && !$('c2phone').value.trim()){ $('c2phone').classList.add('bad'); miss.push($('c2phone')); }
     if (pick.fireYN === '要放'){
@@ -398,15 +409,16 @@ button.go:disabled{opacity:.6}
       var gN = document.querySelector('[data-pick="friendN"]'); gN.classList.toggle('bad', !frN()); if (!frN()) miss.push(gN);
       Array.prototype.forEach.call(document.querySelectorAll('[data-fr]'), function(r){ var ok = !!frPos[+r.getAttribute('data-fr')]; r.classList.toggle('bad', !ok); if (!ok) miss.push(r); });
     }
-    if (!loop && !miss.length){ var sm = segCheck(); if (sm){ $('err').textContent = sm; return; } if (!$('dBox').hidden && !$('dAddr').value.trim()){ $('dAddr').classList.add('bad'); miss.push($('dAddr')); } }
+    if (!loop && !miss.length){ var sm = segCheck(); if (sm){ $('err').textContent = sm; return; } }
     if (miss.length){ $('err').textContent = '還有 ' + miss.length + ' 個欄位沒填喔'; miss[0].scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
     if (!/^[0-9+\-\s()]{8,20}$/.test($('phone').value.trim())){ $('err').textContent = '電話格式好像不太對，再確認一下'; $('phone').classList.add('bad'); return; }
     var f = loop ? { mode: 'loop', name: $('name').value.trim(), phone: $('phone').value.trim(), meet: $('meet').value.trim(), combo: pick.combo, loop1: $('loop1').value, loop2YN: pick.loop2YN, loop2T: pick.loop2YN === '是' ? $('loop2T').value : '', cane: pick.cane, friend: pick.friend, friendN: frN() ? String(frN()) : '', friendPos: frN() ? frPos.slice(0, frN()).join(',') : '', note: $('note').value.trim() }
       : { mode: '', name: $('name').value.trim(), phone: $('phone').value.trim(), meet: $('meet').value.trim(), wed: $('wed').value.trim(), start: $('start').value, back: $('back').value,
-      segs: segs.map(function(z){ return z.t + ' ' + z.f + '→' + z.to; }).join('\n'), dAddr: $('dBox').hidden ? '' : $('dAddr').value.trim(),
+      segs: segs.map(function(z){ return z.t + ' ' + z.f + '→' + z.to; }).join('\n'), dAddr: '',
       combo: pick.combo, restYN: pick.restYN, restT: pick.restYN === '需要' ? $('restT').value : '', restAddr: pick.restYN === '需要' ? $('restAddr').value.trim() : '', cane: pick.cane, friend: pick.friend, friendN: frN() ? String(frN()) : '', friendPos: frN() ? frPos.slice(0, frN()).join(',') : '', note: $('note').value.trim() };
-    ['meetL', 'meetN'].concat(loop ? [] : ['wedL', 'wedN', 'restL', 'restN', 'dL', 'dN']).forEach(function(id){ var e = $(id); f[id] = e ? e.value.trim() : ''; });
-    if (!loop && pick.restYN !== '需要'){ f.restL = ''; f.restN = ''; } if (!loop && $('dBox').hidden){ f.dL = ''; f.dN = ''; }
+    f.meetL = $('meetL').value.trim(); f.meetN = $('meetN').value.trim();
+    if (!loop){ var P2 = PTS.map(function(z, i){ return { k: PTL.charAt(i), name: String(z.name || '').trim(), note: String(z.note || '').trim(), addr: String(z.addr || '').trim() }; });
+      f.pts = JSON.stringify(P2); f.wed = (P2[0] || {}).addr || ''; f.wedL = (P2[0] || {}).name || ''; f.wedN = (P2[0] || {}).note || ''; f.restYN = ''; f.restT = ''; f.restAddr = ''; f.dAddr = ''; }
     var fire = pick.fireYN === '要放', ord = firePts().map(function(z){ return z[0]; });
     f.fireYN = pick.fireYN || ''; f.fire = fire ? ord.filter(function(v){ return firePick.indexOf(v) >= 0; }).join(',') : ''; f.fireType = fire ? (pick.fireType || '') : '';
     var c2 = !$('c2Box').hidden; f.c2name = c2 ? $('c2name').value.trim() : ''; f.c2phone = c2 ? $('c2phone').value.trim() : ''; f.crole = c2 ? (pick.crole || '') : ''; f.crel = c2 && !$('crelBox').hidden ? $('crel').value.trim() : '';
