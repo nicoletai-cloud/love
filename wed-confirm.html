@@ -139,7 +139,7 @@ button.go:disabled{opacity:.6}
     <div class="sec"><h2><i>01</i>聯絡人</h2><p>司機會在用車前一天和新郎核對流程，請填新郎本人的電話；用車當天現場另有人可以聯繫的話，可以再留第二聯絡人。</p></div>
     <div class="row2">
       <div class="field"><label class="q" for="name">新郎姓名<b>*</b></label><input id="name" autocomplete="name" data-req></div>
-      <div class="field"><label class="q" for="phone">新郎電話<b>*</b></label><input id="phone" type="tel" inputmode="tel" autocomplete="tel" data-req></div>
+      <div class="field"><label class="q" for="phone">新郎電話<b>*</b></label><input id="phone" type="tel" inputmode="tel" autocomplete="tel" data-req placeholder="婚顧代填可只留婚顧電話"></div>
     </div>
     <!-- 2026-10-20 Nicole：服務確認單、派車單一定有新郎姓名電話；客人另外留的聯絡人放第二聯絡人（例：親友／伴娘車駕駛） -->
     <div class="row2">
@@ -398,7 +398,9 @@ button.go:disabled{opacity:.6}
   $('f').addEventListener('submit', function(e){
     e.preventDefault(); var miss = [];
     var loop = pick.mode === '單點繞圈';
-    Array.prototype.forEach.call(document.querySelectorAll('[data-req]'), function(el){ if (el.closest('[hidden]')){ el.classList.remove('bad'); return; } var ok = !!el.value.trim(); el.classList.toggle('bad', !ok); if (!ok) miss.push(el); });
+    /* 2026-11-03 Nicole：新郎電話、婚顧／主持人電話有填一個就好 */
+    var agentPh = !$('c2Box').hidden && /婚顧|主持/.test(pick.crole || '') && !!$('c2phone').value.trim(), noGroomPh = agentPh && !$('phone').value.trim();
+    Array.prototype.forEach.call(document.querySelectorAll('[data-req]'), function(el){ if (el.closest('[hidden]') || (el.id === 'phone' && noGroomPh)){ el.classList.remove('bad'); return; } var ok = !!el.value.trim(); el.classList.toggle('bad', !ok); if (!ok) miss.push(el); });
     (loop ? ['who', 'combo', 'loop2YN', 'friend', 'cane', 'fireYN'] : ['who', 'combo', 'friend', 'cane', 'fireYN']).concat($('c2Box').hidden ? [] : ['crole']).forEach(function(kk){ var g = document.querySelector('[data-pick="' + kk + '"]'); var ok = !!pick[kk]; g.classList.toggle('bad', !ok); if (!ok) miss.push(g); });
     if (loop && pick.loop2YN === '是' && !$('loop2T').value){ $('loop2T').classList.add('bad'); miss.push($('loop2T')); }
     if (!loop){ if (!PTS.length){ $('ptAdd').classList.add('bad'); miss.push($('ptAdd')); } else $('ptAdd').classList.remove('bad');
@@ -416,7 +418,7 @@ button.go:disabled{opacity:.6}
     }
     if (!loop && !miss.length){ var sm = segCheck(); if (sm){ $('err').textContent = sm; return; } }
     if (miss.length){ $('err').textContent = '還有 ' + miss.length + ' 個欄位沒填喔'; miss[0].scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
-    if (!/^[0-9+\-\s()]{8,20}$/.test($('phone').value.trim())){ $('err').textContent = '電話格式好像不太對，再確認一下'; $('phone').classList.add('bad'); return; }
+    if (!noGroomPh && !/^[0-9+\-\s()]{8,20}$/.test($('phone').value.trim())){ $('err').textContent = '電話格式好像不太對，再確認一下'; $('phone').classList.add('bad'); return; }
     var f = loop ? { mode: 'loop', name: $('name').value.trim(), phone: $('phone').value.trim(), meet: $('meet').value.trim(), combo: pick.combo, loop1: $('loop1').value, loop2YN: pick.loop2YN, loop2T: pick.loop2YN === '是' ? $('loop2T').value : '', cane: pick.cane, friend: pick.friend, friendN: frN() ? String(frN()) : '', friendPos: frN() ? frPos.slice(0, frN()).join(',') : '', note: $('note').value.trim() }
       : { mode: '', name: $('name').value.trim(), phone: $('phone').value.trim(), meet: $('meet').value.trim(), wed: $('wed').value.trim(), start: $('start').value, back: $('back').value,
       segs: segs.map(function(z){ return z.t + ' ' + z.f + '→' + z.to; }).join('\n'), dAddr: '',
