@@ -29,7 +29,7 @@ label.q small{font-weight:400;color:var(--muted);margin-left:6px}
 input,textarea{font:inherit;font-size:17px;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:11px 13px;min-height:48px;width:100%}
 textarea{min-height:90px;resize:vertical}
 .nl-row{display:flex;gap:8px;align-items:flex-start;margin:0 0 8px}.nl-row b{padding-top:13px;min-width:1.4em;text-align:right;color:var(--muted)}.nl-row textarea{flex:1;min-height:48px;overflow:hidden}.nl-row button{flex:0 0 auto;width:40px;height:48px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--muted);font:inherit;font-size:16px;cursor:pointer}
-.seg{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:0 0 10px;background:var(--surface)}.seg.bad{border-color:#c0392b}.seg .sh{display:flex;justify-content:space-between;align-items:center;font-size:14px;color:var(--muted);margin:0 0 6px}.seg .sh button{border:0;background:transparent;color:var(--muted);font:inherit;font-size:15px;cursor:pointer;padding:2px 6px}.seg .sr{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:6px;align-items:center;margin-top:8px}.seg select{font:inherit;font-size:16px;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 8px;min-height:46px;width:100%}.seg .ar{color:var(--muted)}
+.seg{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:0 0 10px;background:var(--surface)}.seg.bad{border-color:#c0392b}.seg .sh{display:flex;justify-content:space-between;align-items:center;font-size:14px;color:var(--muted);margin:0 0 6px}.seg .sh button{border:0;background:transparent;color:var(--muted);font:inherit;font-size:15px;cursor:pointer;padding:2px 6px}.seg .sr{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:6px;align-items:center;margin-top:8px}.seg select{font:inherit;font-size:16px;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 8px;min-height:46px;width:100%}.ptc select{font:inherit;font-size:16px;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 8px;min-height:48px;width:100%}.ptc select.bad{border-color:#c0392b}.seg .ar{color:var(--muted)}
 .nl-add{font:inherit;font-size:15px;padding:9px 14px;border:1px dashed var(--accent);border-radius:10px;background:transparent;color:var(--accent);cursor:pointer}
 input:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
 input[readonly]{background:transparent;color:var(--muted)}
@@ -149,18 +149,19 @@ button.go:disabled{opacity:.6}
     <div class="field" id="c2Box" hidden><label class="q">第二聯絡人是<b>*</b></label>
       <div class="chips" data-pick="crole"><button type="button" class="chip">新娘</button><button type="button" class="chip">親友</button><button type="button" class="chip">婚顧／主持人</button><button type="button" class="chip">其他</button></div></div>
     <div class="field" id="crelBox" hidden><label class="q" for="crel">是新人的什麼人<b>*</b></label><input id="crel" maxlength="30" placeholder="例：伴娘車駕駛、新郎哥哥、伴郎"></div>
-    <div class="sec"><h2><i>02</i>地點與時間</h2><p>先填集合地點，再按「＋ 新增地點」把當天會到的地方一個一個加進來（例如男方家、女方家、飯店、餐廳），最後再排時間和行程。地址請填完整（含門牌號碼）。</p></div>
+    <div class="sec"><h2><i>02</i>地點與時間</h2><p>先填集合地點，再按「＋ 新增地點」把當天會到的地方一個一個加進來（選地點名稱：迎娶、入門、證婚、祭祖、宴客或其他，備註可寫男方家、○○飯店等），最後再排時間和行程。地址請填完整（含門牌號碼）。</p></div>
     <div class="field"><label class="q">當天行程<b>*</b></label>
       <div class="chips" data-pick="mode"><button type="button" class="chip">迎娶（男方家 ⇄ 女方家）</button><button type="button" class="chip">單點繞圈</button></div></div>
     <!-- 2026-11-03 Nicole：A 永遠是集合地點；其他地點用「＋ 新增地點」自己加（地址／地點名稱／備註），再排流程 -->
-    <div class="field ptf"><label class="q" for="meet"><span class="pk">A</span>集合地點<b>*</b></label><div class="row2 ptn"><input id="meetL" maxlength="20" placeholder="地點名稱，例：男方家" aria-label="集合地點名稱"><input id="meetN" maxlength="30" placeholder="備註（選填）" aria-label="集合地點備註"></div><input id="meet" data-req placeholder="地址（含門牌號碼）"></div>
     <div class="field"><label class="q">是否訂結一起<b>*</b></label><div class="help">訂婚（文定）和結婚（迎娶）在同一天。</div>
       <div class="chips" data-pick="combo"><button type="button" class="chip">是</button><button type="button" class="chip">否</button></div></div>
+    <!-- 2026-11-03 Nicole：地點清單第一個永遠是 A 集合地點（不能刪），新增的地點依序 B、C、D…，刪除後重新編號 -->
+    <div class="field"><label class="q" for="meet">當天地點<b>*</b></label><div class="help">第一個 A 固定是集合地點；其他會去的地方按「＋ 新增地點」，選地點名稱，備註可以寫清楚，例如：迎娶地點／備註「女方家」。</div>
+      <div class="ptc"><div class="ph"><span><span class="pk">A</span>集合地點</span></div><input id="meetL" type="hidden" value="集合地點"><input id="meetN" maxlength="30" placeholder="備註（選填），例：男方家" aria-label="集合地點備註" style="margin-bottom:8px"><input id="meet" data-req placeholder="地址（含門牌號碼）"></div>
     <div id="wedBox">
-      <div class="field"><label class="q">其他地點<b>*</b></label><div class="help">當天禮車會去的每個地方都加一個，例如：女方家、迎娶的飯店、餐廳。</div>
-        <div id="pts"></div><button type="button" class="nl-add" id="ptAdd">＋ 新增地點</button></div>
+        <div id="pts"></div><button type="button" class="nl-add" id="ptAdd" style="width:100%;display:block">＋ 新增地點</button>
       <div hidden><input id="wed"><input id="start" type="time"><input id="back" type="time"><input id="restT" type="time"><input id="restAddr"><input id="dAddr"></div><!-- 舊欄位只留著相容舊資料 -->
-    </div>
+    </div></div>
     <div id="loopBox" hidden>
       <div class="field"><label class="q" for="loop1">當天預計第一圈時間<b>*</b></label><input id="loop1" type="time" data-req><div class="help" style="font-size:13px;margin:0">司機會提前 20 分鐘集合</div></div>
       <div class="field"><label class="q">是否繞第二圈<b>*</b></label>
@@ -305,23 +306,26 @@ button.go:disabled{opacity:.6}
   }
   ['start', 'back', 'restT', 'loop1', 'loop2T'].forEach(function(id){ $(id).addEventListener('input', hoursTip); });
   // 2026-10-20 Nicole：當天流程一段一行（時間＋起點→終點），取代原本的出發／回男方家／去餐廳三格
-  var segs = [], PN = { A: '集合地點' }, PTS = [], PTL = 'BCDEFGHIJKLMN';
+  var segs = [], PN = { A: '集合地點' }, PTS = [], PTL = 'BCDEFGHIJKLMN', PT_NAMES = ['迎娶地點', '入門地點', '證婚地點', '祭祖地點', '宴客地點', '其他地點'];
+  /* 2026-11-03 Nicole：地點名稱改下拉選單；舊資料的名稱（女方家、餐廳…）換成對應選項，原名稱放備註 */
+  function ptGuess(n){ n = String(n || '').trim(); if (!n || PT_NAMES.indexOf(n) >= 0) return [n, '']; return [/女方|飯店|酒店|旅|迎娶/.test(n) ? '迎娶地點' : /餐|宴|喜/.test(n) ? '宴客地點' : /男方|新家|新居|入門/.test(n) ? '入門地點' : /證婚|教堂|戶政/.test(n) ? '證婚地點' : /祭祖|祖厝|宗祠/.test(n) ? '祭祖地點' : '其他地點', n]; }
   /* 2026-11-03 Nicole：A 永遠是集合地點；其他地點用「＋ 新增地點」加（地址／地點名稱／備註），流程與放炮選單跟著顯示 */
   function ptName(i){ var z = PTS[i] || {}; return z.name || ('地點 ' + PTL.charAt(i)); }
-  function ptSync(){ PN = { A: $('meetL').value.trim() || '集合地點' }; PTS.forEach(function(z, i){ PN[PTL.charAt(i)] = ptName(i); }); Array.prototype.forEach.call(document.querySelectorAll('#pts .ptc'), function(c, i){ var t = c.querySelector('.pn'); if (t) t.textContent = ptName(i); }); }
+  function ptSync(){ PN = { A: '集合地點' }; PTS.forEach(function(z, i){ PN[PTL.charAt(i)] = ptName(i); }); Array.prototype.forEach.call(document.querySelectorAll('#pts .ptc'), function(c, i){ var t = c.querySelector('.pn'); if (t) t.textContent = ptName(i); }); }
   function ptsRender(){
     $('pts').innerHTML = PTS.map(function(z, i){ var k = PTL.charAt(i); return '<div class="ptc" data-pti="' + i + '"><div class="ph"><span><span class="pk">' + k + '</span><span class="pn">' + esc(ptName(i)) + '</span></span><button type="button" data-ptdel="' + i + '">✕ 刪除</button></div>' +
-      '<div class="row2 ptn"><input data-pf="name" maxlength="20" placeholder="地點名稱，例：女方家、○○飯店" value="' + esc(z.name) + '" aria-label="' + k + ' 地點名稱"><input data-pf="note" maxlength="30" placeholder="備註（選填）" value="' + esc(z.note) + '" aria-label="' + k + ' 地點備註"></div>' +
+      '<div class="row2 ptn"><select data-pf="name" aria-label="' + k + ' 地點名稱"><option value="">選地點名稱</option>' + PT_NAMES.map(function(n){ return '<option' + (n === z.name ? ' selected' : '') + '>' + n + '</option>'; }).join('') + '</select><input data-pf="note" maxlength="30" placeholder="備註（選填）" value="' + esc(z.note) + '" aria-label="' + k + ' 地點備註"></div>' +
       '<input data-pf="addr" placeholder="地址（含門牌號碼）" value="' + esc(z.addr) + '" aria-label="' + k + ' 地址"></div>'; }).join('');
     $('ptAdd').hidden = PTS.length >= PTL.length; ptSync();
   }
   function ptsChanged(){ ptSync(); try { if (segReady){ segRead(); segRender(); } } catch (x) {} try { fireUi(); } catch (x) {} }
   $('pts').addEventListener('input', function(e){ var c = e.target.closest('[data-pti]'), f = e.target.getAttribute('data-pf'); if (!c || !f) return; PTS[+c.getAttribute('data-pti')][f] = e.target.value; e.target.classList.remove('bad'); if (f === 'name') ptsChanged(); else if (f === 'addr') { try { fireUi(); } catch (x) {} } });
+  $('pts').addEventListener('change', function(e){ if (e.target.tagName !== 'SELECT') return; var c = e.target.closest('[data-pti]'); if (!c) return; PTS[+c.getAttribute('data-pti')].name = e.target.value; e.target.classList.remove('bad'); ptsChanged(); });
   $('pts').addEventListener('click', function(e){ var b = e.target.closest('[data-ptdel]'); if (!b) return; var i = +b.getAttribute('data-ptdel'), k = PTL.charAt(i); segRead();
     segs = segs.filter(function(z){ return z.f !== k && z.to !== k; }).map(function(z){ var mv = function(v){ var x = PTL.indexOf(v); return x > i ? PTL.charAt(x - 1) : v; }; return { t: z.t, f: mv(z.f), to: mv(z.to) }; });
     PTS.splice(i, 1); ptsRender(); ptsChanged(); });
   $('ptAdd').addEventListener('click', function(){ PTS.push({ name: '', note: '', addr: '' }); ptsRender(); ptsChanged(); var L = document.querySelectorAll('#pts .ptc'); if (L.length) L[L.length - 1].querySelector('input').focus(); });
-  $('meetL').addEventListener('input', ptsChanged);
+
   function segPts(){ return ['A'].concat(PTS.map(function(z, i){ return PTL.charAt(i); })); }
   function segName(v){ return v ? v + ' ' + PN[v] : ''; }
   function segParse(t){ return String(t || '').split('\n').map(function(l){ var m = /^(\d{1,2}:\d{2})?\s*([A-N])\s*→\s*([A-N])$/.exec(l.trim()); return m ? { t: m[1] || '', f: m[2], to: m[3] } : null; }).filter(Boolean); }
@@ -376,11 +380,11 @@ button.go:disabled{opacity:.6}
     setPick('crole', p.crole);
     if (window.noteRender) noteRender();
     setPick('mode', p.mode === 'loop' ? '單點繞圈' : '迎娶（男方家 ⇄ 女方家）'); setPick('combo', p.combo); setPick('restYN', p.restYN);
-    PTS = []; var ptsOk = false; try { var pp = JSON.parse(p.pts || '[]'); if (Array.isArray(pp) && pp.length){ PTS = pp.map(function(z){ return { name: z.name || '', note: z.note || '', addr: z.addr || '' }; }); ptsOk = true; } } catch (x) {}
+    PTS = []; var ptsOk = false; try { var pp = JSON.parse(p.pts || '[]'); if (Array.isArray(pp) && pp.length){ PTS = pp.map(function(z){ var g = ptGuess(z.name); return { name: g[0], note: z.note || g[1] || '', addr: z.addr || '' }; }); ptsOk = true; } } catch (x) {}
     var oldSeg = String(p.segs || '');
-    if (!ptsOk){ var mp = {}; if (p.wed){ PTS.push({ name: p.wedL || '女方家', note: p.wedN || '', addr: p.wed }); mp.B = PTL.charAt(PTS.length - 1); }
-      if (p.restAddr && (p.restYN === '需要' || !p.restYN)){ PTS.push({ name: p.restL || '餐廳', note: p.restN || '', addr: p.restAddr }); mp.C = PTL.charAt(PTS.length - 1); }
-      if (p.dAddr){ PTS.push({ name: p.dL || '其他地點', note: p.dN || '', addr: p.dAddr }); mp.D = PTL.charAt(PTS.length - 1); }
+    if (!ptsOk){ var mp = {}; if (p.wed){ PTS.push({ name: '迎娶地點', note: p.wedN || p.wedL || '女方家', addr: p.wed }); mp.B = PTL.charAt(PTS.length - 1); }
+      if (p.restAddr && (p.restYN === '需要' || !p.restYN)){ PTS.push({ name: '宴客地點', note: p.restN || p.restL || '', addr: p.restAddr }); mp.C = PTL.charAt(PTS.length - 1); }
+      if (p.dAddr){ PTS.push({ name: '其他地點', note: p.dN || p.dL || '', addr: p.dAddr }); mp.D = PTL.charAt(PTS.length - 1); }
       oldSeg = oldSeg.replace(/([B-D])(?=\s*→)|(?:→\s*)([B-D])/g, function(m0, a, b){ var v = a || b; return m0.replace(v, mp[v] || v); }); }
     ptsRender();
     segs = segParse(oldSeg); if (!segs.length) segs = segDefault(); segReady = true; segRender(); setPick('loop2YN', p.loop2YN); setPick('cane', p.cane);
@@ -398,6 +402,7 @@ button.go:disabled{opacity:.6}
     (loop ? ['who', 'combo', 'loop2YN', 'friend', 'cane', 'fireYN'] : ['who', 'combo', 'friend', 'cane', 'fireYN']).concat($('c2Box').hidden ? [] : ['crole']).forEach(function(kk){ var g = document.querySelector('[data-pick="' + kk + '"]'); var ok = !!pick[kk]; g.classList.toggle('bad', !ok); if (!ok) miss.push(g); });
     if (loop && pick.loop2YN === '是' && !$('loop2T').value){ $('loop2T').classList.add('bad'); miss.push($('loop2T')); }
     if (!loop){ if (!PTS.length){ $('ptAdd').classList.add('bad'); miss.push($('ptAdd')); } else $('ptAdd').classList.remove('bad');
+      Array.prototype.forEach.call(document.querySelectorAll('#pts select[data-pf="name"]'), function(el){ var ok = !!el.value; el.classList.toggle('bad', !ok); if (!ok) miss.push(el); });
       Array.prototype.forEach.call(document.querySelectorAll('#pts [data-pf="addr"]'), function(el){ var ok = !!el.value.trim(); el.classList.toggle('bad', !ok); if (!ok) miss.push(el); }); }
     if (!$('crelBox').hidden && !$('crel').value.trim()){ $('crel').classList.add('bad'); miss.push($('crel')); }
     if (!$('c2Box').hidden && !$('c2phone').value.trim()){ $('c2phone').classList.add('bad'); miss.push($('c2phone')); }
@@ -416,7 +421,7 @@ button.go:disabled{opacity:.6}
       : { mode: '', name: $('name').value.trim(), phone: $('phone').value.trim(), meet: $('meet').value.trim(), wed: $('wed').value.trim(), start: $('start').value, back: $('back').value,
       segs: segs.map(function(z){ return z.t + ' ' + z.f + '→' + z.to; }).join('\n'), dAddr: '',
       combo: pick.combo, restYN: pick.restYN, restT: pick.restYN === '需要' ? $('restT').value : '', restAddr: pick.restYN === '需要' ? $('restAddr').value.trim() : '', cane: pick.cane, friend: pick.friend, friendN: frN() ? String(frN()) : '', friendPos: frN() ? frPos.slice(0, frN()).join(',') : '', note: $('note').value.trim() };
-    f.meetL = $('meetL').value.trim(); f.meetN = $('meetN').value.trim();
+    f.meetL = '集合地點'; f.meetN = $('meetN').value.trim();
     if (!loop){ var P2 = PTS.map(function(z, i){ return { k: PTL.charAt(i), name: String(z.name || '').trim(), note: String(z.note || '').trim(), addr: String(z.addr || '').trim() }; });
       f.pts = JSON.stringify(P2); f.wed = (P2[0] || {}).addr || ''; f.wedL = (P2[0] || {}).name || ''; f.wedN = (P2[0] || {}).note || ''; f.restYN = ''; f.restT = ''; f.restAddr = ''; f.dAddr = ''; }
     var fire = pick.fireYN === '要放', ord = firePts().map(function(z){ return z[0]; });
