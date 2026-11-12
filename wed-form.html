@@ -321,7 +321,7 @@ button.go:disabled{opacity:.6}
   // 指定車頭彩：顯示用車日可預訂的款式（有圖、有價），單選；可加購客製英文名字木牌
   var DECO_N = {A:'40cm 紅玫瑰心環',B:'40cm 囍字紅金花環',C:'錦瑟華年熱情款',D:'艾莉絲藍粉色花彩',E:'森系紅色仿真車彩',F:'卡布奇諾浪漫款',G:'紫戀花語詩韻款',H:'繁花似錦溫馨款',I:'花影流光夢幻款',J:'雲裳花語優雅款',K:'小清新浪漫女孩車花',L:'花開如夢繽紛款',M:'花辰月夕喜慶款',N:'丹華映日禮讚款',O:'幽蘭淡雅綺麗款',P:'玉蘭丹華錦繡款',Q:'蘭韻粉黛浪漫款'};
   var DECO = Object.keys(DECO_N).map(function(k){ return { code: k, name: DECO_N[k], price: 0, busy: false }; }), decoSel = '', SIGN_FEE = 1000;
-  function dPrice(z){ return +z.price || (/^[A-JQ]$/.test(z.code) ? 1200 : /^[K-P]$/.test(z.code) ? 1600 : 0); }
+  function dPrice(z){ return +z.price || (/^[A-J]$/.test(z.code) ? 1200 : /^[K-Q]$/.test(z.code) ? 1600 : 0); }
   function money(n){ return 'NT$' + String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
   function renderDeco(){
     var g = $('decoGrid'); g.innerHTML = '';
