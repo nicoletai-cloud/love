@@ -197,7 +197,7 @@ button.go:disabled{opacity:.6}
       '<label class="q" style="font-size:15px">下車地點<b>*</b></label><input class="bD" placeholder="宴會館名稱或地址">' +
       '<label class="retck"><input type="checkbox" class="bR" checked> 這台需要回程</label>' +
       '<div class="legsub"><div class="leg">回程</div>' +
-      '<label class="q" style="font-size:15px">回程出發時間<small>大約即可，未確定可留空</small></label><input type="time" class="rT">' +
+      '<label class="q" style="font-size:15px">回程出發時間<small>可先填寫大致時間，用車前一週確認用車時間</small></label><input type="time" class="rT">' +
       '<label class="q" style="font-size:15px">回程上車地點</label><input class="rF">' +
       '<label class="q" style="font-size:15px">回程下車地點</label><input class="rD"></div>';
     var tm = function(v){ return /^\d{1,2}:\d{2}$/.test(v || '') ? ('0' + v).slice(-5) : ''; };
@@ -239,12 +239,17 @@ button.go:disabled{opacity:.6}
       return { t: d.querySelector('.bT').value, from: f, via: '', to: t2, noRet: !ret, rt: ret ? d.querySelector('.rT').value : '', rfrom: ret ? (d.querySelector('.rF').value.trim() || t2) : '', rto: ret ? (d.querySelector('.rD').value.trim() || f) : '', el: d }; }
     return { t: d.querySelector('.bT').value, from: d.querySelector('.bF').value.trim(), via: d.querySelector('.bV').value.trim(), to: d.querySelector('.bD').value.trim(), el: d }; }); }
   $('bAdd').onclick = function(){ var d = bStopEl({}); d.querySelector('.bT').focus(); };
+  // 2026-11-12 Nicole：貴賓接送用禮車車款，系統傳來的是車款代號（例 c:ALP 10 台），換成車名，不顯示台數（單程是算趟數）
+  var CARN = { X: 'Tesla Model X', S: 'Tesla Model S', Y: 'Tesla Model Y', '3': 'Tesla Model 3', W205: 'Benz W205', W212: 'Benz W212', W213: 'Benz W213', W222: 'Benz W222', W222M: 'Benz W222', W223: 'Benz W223', F30: 'BMW F30', F10: 'BMW F10', F02: 'BMW F02', G12: 'BMW G12', G12M: 'BMW G12', GHB: 'Maserati Ghibli', LEV: 'Maserati Levante', BTO: 'Bentley', BTN: 'Bentley', PAN: 'Porsche Panamera', MAC: 'Porsche Macan', RRG: 'Rolls-Royce Ghost', RRP: 'Rolls-Royce Phantom', LM: 'Lexus LM 300h', ALP: 'Toyota Alphard', VITO: 'Benz VITO', G: 'Benz G Car', FORDMUST: 'Ford Mustang' };
+  function carsTxt(t){ t = String(t || ''); if (!/c:/.test(t)) return t;
+    var seen = []; t.replace(/c:([A-Za-z0-9]+)/g, function(_, k){ var n = CARN[k] || k; if (seen.indexOf(n) < 0) seen.push(n); return _; });
+    return seen.join('、'); }
   function setBus(info){
     if (!BUS){
       BUS = true; $('busBox').hidden = false; $('wedOnly').hidden = true;
       if (SHUT){ document.title = '貴賓接送行程確認｜好好禮車'; $('h1').textContent = '貴賓接送行程確認';
         $('lead').textContent = '謝謝您預約好好禮車的婚宴貴賓接送。\n請留下用車當天的聯絡人，並填寫每一台車的去程與回程。\n\n時間尚未定案也沒關係，可先填寫大致內容；出發前一天，我們會提供車輛資訊及司機聯絡方式。';
-        var sh = $('busBox').querySelector('.sec'); if (sh){ sh.querySelector('h2').innerHTML = '<i>02</i>每台接送安排'; sh.querySelector('p').textContent = '每一台車請填寫去程的上車時間與地點；回程地點預設為去程地點反過來，不同再修改。\n回程時間如尚未確定，可先留空，確認後再告訴客服。'; }
+        var sh = $('busBox').querySelector('.sec'); if (sh){ sh.querySelector('h2').innerHTML = '<i>02</i>每台接送安排'; sh.querySelector('p').textContent = '每一台車請填寫去程的上車時間與地點；回程地點預設為去程地點反過來，不同再修改。\n回程出發時間可先填寫大致時間，用車前一週會再與您確認用車時間。'; }
         $('bAdd').textContent = '＋ 新增一台'; $('bNote').placeholder = '例：第 2 台有長輩需要協助上下車';
         $('s1t').textContent = '訂車人'; $('s1p').textContent = '請留下訂車人的聯絡方式；如有婚顧或其他聯絡人，可以一併新增。';
         $('bNameL').textContent = '訂車人姓名'; $('bPhoneL').textContent = '訂車人電話'; $('bPhoneH').textContent = '請填寫方便聯繫的手機號碼。'; $('cBox').hidden = false;
@@ -259,7 +264,7 @@ button.go:disabled{opacity:.6}
     if (info && Array.isArray(info.stops) && info.stops.some(function(r){ return r && (r.from || r.to); }) && !bVals().some(function(v){ return v.t || v.from || v.via || v.to; })){
       $('bStops').innerHTML = ''; info.stops.slice(0, SHUT ? 30 : 10).forEach(function(r){ if (r && (r.t || r.from || r.via || r.to)) bStopEl(r); }); if (!bBlocks().length) bStopEl({});
     }
-    if (info && (info.date || info.cars)){ var m = String(info.date || '').match(/^(\d{4})-(\d{2})-(\d{2})$/); $('bInfo').textContent = [m ? '用車日期：' + m[1] + '/' + m[2] + '/' + m[3] : '', info.cars ? '車型：' + info.cars : ''].filter(Boolean).join('\n'); $('bInfo').style.whiteSpace = 'pre-line'; $('bInfo').hidden = !$('bInfo').textContent; }
+    if (info && (info.date || info.cars)){ var m = String(info.date || '').match(/^(\d{4})-(\d{2})-(\d{2})$/); $('bInfo').textContent = [m ? '用車日期：' + m[1] + '/' + m[2] + '/' + m[3] : '', info.cars ? '車型：' + carsTxt(info.cars) : ''].filter(Boolean).join('\n'); $('bInfo').style.whiteSpace = 'pre-line'; $('bInfo').hidden = !$('bInfo').textContent; }
   }
   if (Q.get('t') === 'bus' || SHUT) setBus(null);
   if (PREVIEW){ var bn = document.createElement('div'); bn.textContent = '預覽模式：按送出不會真的送出資料'; bn.style.cssText = 'background:#fbeee6;color:#b4532a;border-radius:10px;padding:10px 14px;margin:10px 0;font-size:15px'; document.querySelector('.wrap').insertBefore(bn, $('f')); }
