@@ -63,6 +63,8 @@ input[readonly]{background:transparent;color:var(--muted)}
 .stop .q{display:flex;align-items:center;gap:6px}
 .addstop{font:inherit;font-size:15px;width:100%;min-height:46px;border:1.5px dashed var(--line);border-radius:14px;background:transparent;color:var(--fg);cursor:pointer}
 .addstop:disabled{opacity:.45;cursor:default}
+/* 2026-11-12 Nicole：婚宴貴賓接送：每台去程＋回程 */
+.leg{margin:10px 0 2px;font-weight:700;font-size:15px;color:var(--fg)}.legsub{border-top:1px dashed var(--line);margin-top:12px;padding-top:8px}.retck{display:flex;align-items:center;gap:8px;font-size:15px;margin:8px 0 0;cursor:pointer}.retck input{width:auto;min-height:0}
 .route{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-height:52px;font-size:17px;font-weight:600;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .route .ph{color:var(--muted);font-weight:400;font-size:15px}
 .route .arrow{color:var(--accent)}
@@ -181,7 +183,34 @@ button.go:disabled{opacity:.6}
   var PREVIEW = Q.get('preview') === '1';
   // 遊覽車接駁單：網址有 t=bus，或機器人回報這張單是遊覽車
   var BUS = false;
+  // 2026-11-12 Nicole：婚宴貴賓接送（網址 t=shuttle）：每台都有去程與回程，回程地點預設＝去程地點反過來
+  var SHUT = Q.get('t') === 'shuttle';
+  function sStopEl(r){
+    r = r || {};
+    var d = document.createElement('div'); d.className = 'field stop';
+    d.innerHTML = '<div class="qrow"><label class="q"><span class="bn"></span></label><button type="button" class="rm">移除</button></div>' +
+      '<div class="leg">去程</div>' +
+      '<label class="q" style="font-size:15px">上車時間<b>*</b></label><input type="time" class="bT">' +
+      '<label class="q" style="font-size:15px">上車地點<b>*</b></label><input class="bF" placeholder="完整地址或社區名稱">' +
+      '<label class="q" style="font-size:15px">下車地點<b>*</b></label><input class="bD" placeholder="宴會館名稱或地址">' +
+      '<label class="retck"><input type="checkbox" class="bR" checked> 這台需要回程</label>' +
+      '<div class="legsub"><div class="leg">回程</div>' +
+      '<label class="q" style="font-size:15px">回程出發時間<small>大約即可，未確定可留空</small></label><input type="time" class="rT">' +
+      '<label class="q" style="font-size:15px">回程上車地點</label><input class="rF">' +
+      '<label class="q" style="font-size:15px">回程下車地點</label><input class="rD"></div>';
+    var tm = function(v){ return /^\d{1,2}:\d{2}$/.test(v || '') ? ('0' + v).slice(-5) : ''; };
+    d.querySelector('.bT').value = tm(r.t); d.querySelector('.bF').value = r.from || ''; d.querySelector('.bD').value = r.to || '';
+    d.querySelector('.rT').value = tm(r.rt); d.querySelector('.rF').value = r.rfrom || ''; d.querySelector('.rD').value = r.rto || '';
+    d.querySelector('.bR').checked = !r.noRet;
+    function sync(){ var on = d.querySelector('.bR').checked; d.querySelector('.legsub').hidden = !on;
+      d.querySelector('.rF').placeholder = d.querySelector('.bD').value.trim() || '預設＝去程下車地點';
+      d.querySelector('.rD').placeholder = d.querySelector('.bF').value.trim() || '預設＝去程上車地點'; }
+    d.querySelector('.bF').addEventListener('input', sync); d.querySelector('.bD').addEventListener('input', sync); d.querySelector('.bR').addEventListener('change', sync); sync();
+    d.querySelector('.rm').onclick = function(){ if (bBlocks().length > 1){ d.remove(); bNum(); } };
+    $('bStops').appendChild(d); bNum(); return d;
+  }
   function bStopEl(r){
+    if (SHUT) return sStopEl(r);
     var d = document.createElement('div'); d.className = 'field stop';
     d.innerHTML = '<div class="qrow"><label class="q"><span class="bn"></span></label><button type="button" class="rm">移除</button></div>' +
       '<label class="q" style="font-size:15px">時間<b>*</b></label><input type="time" class="bT">' +
@@ -193,24 +222,33 @@ button.go:disabled{opacity:.6}
     $('bStops').appendChild(d); bNum(); return d;
   }
   function bBlocks(){ return Array.prototype.slice.call($('bStops').querySelectorAll('.stop')); }
-  function bNum(){ var L = bBlocks(); L.forEach(function(d, i){ d.querySelector('.bn').textContent = '第 ' + (i + 1) + ' 段'; d.querySelector('.rm').hidden = L.length < 2; }); $('bAdd').disabled = L.length >= 10; }
-  function bVals(){ return bBlocks().map(function(d){ return { t: d.querySelector('.bT').value, from: d.querySelector('.bF').value.trim(), via: d.querySelector('.bV').value.trim(), to: d.querySelector('.bD').value.trim(), el: d }; }); }
+  function bNum(){ var L = bBlocks(); L.forEach(function(d, i){ d.querySelector('.bn').textContent = '第 ' + (i + 1) + (SHUT ? ' 台' : ' 段'); d.querySelector('.rm').hidden = L.length < 2; }); $('bAdd').disabled = L.length >= (SHUT ? 30 : 10); }
+  function bVals(){ return bBlocks().map(function(d){
+    if (SHUT){ var f = d.querySelector('.bF').value.trim(), t2 = d.querySelector('.bD').value.trim(), ret = d.querySelector('.bR').checked;
+      return { t: d.querySelector('.bT').value, from: f, via: '', to: t2, noRet: !ret, rt: ret ? d.querySelector('.rT').value : '', rfrom: ret ? (d.querySelector('.rF').value.trim() || t2) : '', rto: ret ? (d.querySelector('.rD').value.trim() || f) : '', el: d }; }
+    return { t: d.querySelector('.bT').value, from: d.querySelector('.bF').value.trim(), via: d.querySelector('.bV').value.trim(), to: d.querySelector('.bD').value.trim(), el: d }; }); }
   $('bAdd').onclick = function(){ var d = bStopEl({}); d.querySelector('.bT').focus(); };
   function setBus(info){
     if (!BUS){
       BUS = true; $('busBox').hidden = false; $('wedOnly').hidden = true;
+      if (SHUT){ document.title = '貴賓接送行程確認｜好好禮車'; $('h1').textContent = '貴賓接送行程確認';
+        $('lead').textContent = '謝謝您預約好好禮車的婚宴貴賓接送。\n請留下用車當天的聯絡人，並填寫每一台車的去程與回程。\n\n時間尚未定案也沒關係，可先填寫大致內容；出發前一天，我們會提供車輛資訊及司機聯絡方式。';
+        var sh = $('busBox').querySelector('.sec'); if (sh){ sh.querySelector('h2').innerHTML = '<i>02</i>每台接送安排'; sh.querySelector('p').textContent = '每一台車請填寫去程的上車時間與地點；回程地點預設為去程地點反過來，不同再修改。\n回程時間如尚未確定，可先留空，確認後再告訴客服。'; }
+        $('bAdd').textContent = '＋ 新增一台'; $('bNote').placeholder = '例：第 2 台有長輩需要協助上下車、乘車貴賓姓名與電話';
+      } else {
       document.title = '遊覽車行程確認｜好好禮車'; $('h1').textContent = '遊覽車行程確認';
       $('lead').textContent = '謝謝您預約好好禮車的遊覽車接駁。\n請留下用車當天的聯絡人，並確認用車流程的時間與地點。\n\n行程尚未定案也沒關係，可先填寫大致內容；用車前一週，我們會再與您核對確切時間與行程，並提供用車說明。';
+      }
       $('s1t').textContent = '當天聯絡人'; $('s1p').textContent = '司機與客服會聯繫這位聯絡人。';
       $('doneP').textContent = '我們會依照這份資料安排車輛。\n用車前一週會再與您核對確切行程與時間，並提供用車說明。\n填寫完成後，也麻煩回覆訊息通知客服喔。';
       if (!bBlocks().length) bStopEl({});
     }
     if (info && Array.isArray(info.stops) && info.stops.some(function(r){ return r && (r.from || r.to); }) && !bVals().some(function(v){ return v.t || v.from || v.via || v.to; })){
-      $('bStops').innerHTML = ''; info.stops.slice(0, 10).forEach(function(r){ if (r && (r.t || r.from || r.via || r.to)) bStopEl(r); }); if (!bBlocks().length) bStopEl({});
+      $('bStops').innerHTML = ''; info.stops.slice(0, SHUT ? 30 : 10).forEach(function(r){ if (r && (r.t || r.from || r.via || r.to)) bStopEl(r); }); if (!bBlocks().length) bStopEl({});
     }
     if (info && (info.date || info.cars)){ var m = String(info.date || '').match(/^(\d{4})-(\d{2})-(\d{2})$/); $('bInfo').textContent = [m ? '用車日期：' + m[1] + '/' + m[2] + '/' + m[3] : '', info.cars ? '車型：' + info.cars : ''].filter(Boolean).join('\n'); $('bInfo').style.whiteSpace = 'pre-line'; $('bInfo').hidden = !$('bInfo').textContent; }
   }
-  if (Q.get('t') === 'bus') setBus(null);
+  if (Q.get('t') === 'bus' || SHUT) setBus(null);
   if (PREVIEW){ var bn = document.createElement('div'); bn.textContent = '預覽模式：按送出不會真的送出資料'; bn.style.cssText = 'background:#fbeee6;color:#b4532a;border-radius:10px;padding:10px 14px;margin:10px 0;font-size:15px'; document.querySelector('.wrap').insertBefore(bn, $('f')); }
 
   // 單選按鈕群組（含「其他」自行填寫）
@@ -356,14 +394,19 @@ button.go:disabled{opacity:.6}
     if (!/^[0-9+\-\s()]{8,20}$/.test(ph)) return fail(ph ? '電話格式不正確' : '請填寫：當天聯絡人電話', $('bPhone'));
     var V = bVals().filter(function(v){ return v.t || v.from || v.via || v.to; });
     if (!V.length) return fail('請至少填寫一段用車流程', bBlocks()[0].querySelector('.bT'));
+    var U = SHUT ? ' 台' : ' 段';
     for (var i = 0; i < V.length; i++){
-      if (!V[i].t) return fail('請填寫第 ' + (bBlocks().indexOf(V[i].el) + 1) + ' 段的時間', V[i].el.querySelector('.bT'));
-      if (!V[i].from) return fail('請填寫第 ' + (bBlocks().indexOf(V[i].el) + 1) + ' 段的上車地點', V[i].el.querySelector('.bF'));
-      if (!V[i].to) return fail('請填寫第 ' + (bBlocks().indexOf(V[i].el) + 1) + ' 段的下車地點', V[i].el.querySelector('.bD'));
+      var n = bBlocks().indexOf(V[i].el) + 1;
+      if (!V[i].t) return fail('請填寫第 ' + n + U + '的' + (SHUT ? '去程上車時間' : '時間'), V[i].el.querySelector('.bT'));
+      if (!V[i].from) return fail('請填寫第 ' + n + U + '的' + (SHUT ? '去程' : '') + '上車地點', V[i].el.querySelector('.bF'));
+      if (!V[i].to) return fail('請填寫第 ' + n + U + '的' + (SHUT ? '去程' : '') + '下車地點', V[i].el.querySelector('.bD'));
     }
-    var lines = V.map(function(v){ return v.t + ' ' + ['上車:' + v.from, v.via ? '中停:' + v.via : '', '下車:' + v.to].filter(Boolean).join(' → '); });
+    var lines = SHUT ? [].concat.apply([], V.map(function(v, i){ var L = ['第 ' + (i + 1) + ' 台 去程 ' + v.t + ' 上車:' + v.from + ' → 下車:' + v.to];
+        L.push(v.noRet ? '第 ' + (i + 1) + ' 台 不需要回程' : '第 ' + (i + 1) + ' 台 回程 ' + (v.rt || '時間待定') + ' 上車:' + v.rfrom + ' → 下車:' + v.rto); return L; }))
+      : V.map(function(v){ return v.t + ' ' + ['上車:' + v.from, v.via ? '中停:' + v.via : '', '下車:' + v.to].filter(Boolean).join(' → '); });
     var body = { action: 'wedForm', bus: '1', hp: $('hp').value, no: $('no').value.trim(), role: nm, rel: '當天聯絡人', phone: ph, start: V[0].t, meet: V[0].from, route: lines.join('\n'), note: $('bNote').value.trim(),
-      busStops: JSON.stringify(V.map(function(v){ return { t: v.t, from: v.from, via: v.via, to: v.to }; })) };
+      busStops: JSON.stringify(V.map(function(v){ return SHUT ? { t: v.t, from: v.from, via: '', to: v.to, rt: v.rt, rfrom: v.rfrom, rto: v.rto, noRet: v.noRet } : { t: v.t, from: v.from, via: v.via, to: v.to }; })) };
+    if (SHUT) body.shuttle = '1';
     if (PREVIEW){ $('f').hidden = true; $('done').hidden = false; $('doneP').textContent = '（預覽模式：資料沒有送出）\n\n' + ['當天聯絡人：' + nm + ' ' + ph].concat(lines).concat(body.note ? ['其他說明：' + body.note] : []).join('\n'); window.scrollTo(0, 0); return; }
     var go = $('go'); go.disabled = true; go.textContent = '送出中…';
     fetch(BOT, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body) })
