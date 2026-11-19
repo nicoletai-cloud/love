@@ -181,7 +181,7 @@ a.line{display:flex;align-items:center;justify-content:center;gap:22px;backgroun
   function bad(t){ $('loading').hidden = true; $('bad').hidden = false; $('bad').textContent = t; }
   function md(d){ var m = String(d || '').match(/^(\d{4})-(\d{2})-(\d{2})/); return m ? m[1] + '/' + (+m[2]) + '/' + (+m[3]) : ''; }
   function tm(t){ var d = new Date(+t); return (d.getMonth() + 1) + '/' + d.getDate() + ' ' + ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2); }
-  function payTxt(p, bal){ return p === 'cash' ? '尾款付款方式：用車當天付現金' : p === 'transfer' ? '尾款付款方式：提前匯款' : '月結，不用支付尾款'; }
+  function payTxt(p, bal){ return p === 'cash' ? '尾款付款方式：用車當天付現金' : p === 'transfer' ? '尾款付款方式：提前匯款' : p === 'paid' ? '尾款已付清' : '月結，不用支付尾款'; }
   function setPay(p){ pay = p; Array.prototype.forEach.call(document.querySelectorAll('.opt'), function(b){ b.setAttribute('aria-pressed', b.dataset.pay === p ? 'true' : 'false'); }); }
   /* 2026-10-20 Nicole：車隊那幾行（車序｜車號｜駕駛｜車款｜電話｜緊急聯絡人）改用表格顯示；導航定位長網址改成短連結 */
   function fleetTbl(h){
@@ -215,10 +215,12 @@ a.line{display:flex;align-items:center;justify-content:center;gap:22px;backgroun
       return '<a class="th" href="' + u + '" target="_blank" rel="noopener" data-fid="' + m[1] + '" data-ttl="' + w + ' ' + n + '"><img src="https://drive.google.com/thumbnail?id=' + m[1] + '&amp;sz=w300" alt="' + w + ' ' + n + '" loading="lazy" onerror="this.remove()"><span>' + w + ' ' + n + '</span></a>'; })
       .replace(/(<\/a>)、(?=<a class="th")/g, '$1');   // 2026-10-20 Nicole：附件直接顯示小縮圖，點了用小視窗放大
     if (j.mon) $('payBox').hidden = true;
+    /* 2026-11-19 Nicole：尾款已付清的單，不讓客人選尾款付款方式，直接顯示已付清 */
+    if (j.done && !j.mon) $('payBox').innerHTML = '<h2>尾款</h2><div class="warnbox">✓ 尾款已付清，用車當天不需再付款；如有加時，加時費用再交給現場禮車負責人即可。</div>';
     $('amtCash').textContent = '金額 ' + money(j.bal) + '（尾款及司機禮）'; $('amtXfer').textContent = '金額 ' + money(j.bal);
     var C = ('conf' in j) ? j.conf : (j.ok && typeof j.ok === 'object' ? j.ok : null);   // 2026-10-19 客人確認紀錄改放 conf（ok 只代表讀取成功）
     if (C && C.pay === 'transfer' && !(j.fix && j.fix.at > C.at)){ setPay('transfer'); return done('ok'); }
-    if (C){ setPay(C.pay === 'none' ? '' : C.pay); $('okChk').checked = true; $('prevOk').hidden = false; $('prevOk').textContent = '你已於 ' + tm(C.at) + ' 確認過（' + payTxt(C.pay, j.bal) + '），如需更改付款方式可以重新送出。'; }
+    if (C){ setPay(C.pay === 'none' || C.pay === 'paid' ? '' : C.pay); $('okChk').checked = true; $('prevOk').hidden = false; $('prevOk').textContent = '你已於 ' + tm(C.at) + ' 確認過（' + payTxt(C.pay, j.bal) + '），如需更改付款方式可以重新送出。'; }
   }
   function done(kind){
     $('main').hidden = true; $('top').hidden = true; $('done').hidden = false; window.scrollTo(0, 0);
@@ -226,13 +228,14 @@ a.line{display:flex;align-items:center;justify-content:center;gap:22px;backgroun
     if (J.share){ $('dCard').hidden = false; $('dCard').href = J.share; }   // 2026-10-20 確認後才看得到司機聯絡方式
     var nt = 'NT$ ' + Math.round(+J.bal || 0).toLocaleString('en-US');
     if (J.mon){ $('dPay').textContent = '尾款・月結'; $('dAmt').textContent = ''; $('dText').textContent = '期待陪你們迎接美好的一天。'; }
+    else if (J.done){ $('dPay').textContent = '尾款・已付清'; $('dAmt').textContent = ''; $('dText').textContent = '用車當天不需再付款，期待陪你們迎接美好的一天。'; }
     else if (pay === 'cash'){ $('dPay').textContent = '尾款・現金支付'; $('dAmt').textContent = nt; $('dText').textContent = '尾款與司機禮包可一起準備，當天交給車隊負責人即可，也可由親友轉交。'; }
     else { $('dPay').textContent = '尾款・提前匯款'; $('dAmt').textContent = nt; $('dText').textContent = '請於用車前一天完成匯款；因會計無法即時對帳，請勿於用車當天匯款。'; $('dPaid').hidden = false; var bk = bankFrom(J.text); if (bk){ $('dBank').hidden = false; $('dBankTxt').textContent = bk; } if (J.paid) paidDone(J.paid.at); }
   }
   Array.prototype.forEach.call(document.querySelectorAll('.opt'), function(b){ b.onclick = function(){ setPay(b.dataset.pay); $('err').textContent = ''; }; });
   $('go').onclick = function(){
     $('err').textContent = '';
-    if (!J.mon && !pay){ $('err').textContent = '請選擇尾款付款方式'; return; }
+    if (!J.mon && !J.done && !pay){ $('err').textContent = '請選擇尾款付款方式'; return; }
     if (!$('okChk').checked){ $('err').textContent = '請先核對內容，並勾選「皆正確無誤」'; return; }
     if (DEMO) return done('ok');
     var b = this; b.disabled = true; b.textContent = '送出中…';
