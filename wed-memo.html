@@ -124,6 +124,7 @@ a.line{display:flex;align-items:center;justify-content:center;gap:22px;backgroun
           <div style="display:grid;gap:10px">
             <button type="button" class="opt" data-pay="cash" aria-pressed="false"><i class="dot"></i><div><b>用車當天付現金</b><span>請於用車日將尾款及司機禮包成一包交給車隊負責人，可由親友轉交</span><div class="amt" id="amtCash"></div></div></button>
             <button type="button" class="opt" data-pay="transfer" aria-pressed="false"><i class="dot"></i><div><b>提前匯款</b><span>最晚在用車前一天匯款完成，匯款資訊在確認單的「付款」段落；匯款後可在這個頁面回傳匯款資訊</span><div class="amt" id="amtXfer"></div></div></button>
+            <button type="button" class="opt" data-pay="split" aria-pressed="false" id="optSplit" hidden><i class="dot"></i><div><b>尾款匯款，司機禮現場交給司機</b><span>尾款最晚在用車前一天匯款完成；司機禮於用車當天交給司機</span><div class="amt" id="amtSplit"></div></div></button>
           </div>
           <div class="warnbox" style="margin-top:12px">小提醒：因會計無法即時對帳，選擇匯款的話請勿於用車當天匯款，謝謝您 🙏</div>
         </div>
@@ -181,7 +182,7 @@ a.line{display:flex;align-items:center;justify-content:center;gap:22px;backgroun
   function bad(t){ $('loading').hidden = true; $('bad').hidden = false; $('bad').textContent = t; }
   function md(d){ var m = String(d || '').match(/^(\d{4})-(\d{2})-(\d{2})/); return m ? m[1] + '/' + (+m[2]) + '/' + (+m[3]) : ''; }
   function tm(t){ var d = new Date(+t); return (d.getMonth() + 1) + '/' + d.getDate() + ' ' + ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2); }
-  function payTxt(p, bal){ return p === 'cash' ? '尾款付款方式：用車當天付現金' : p === 'transfer' ? '尾款付款方式：提前匯款' : p === 'paid' ? '尾款已付清' : '月結，不用支付尾款'; }
+  function payTxt(p, bal){ return p === 'cash' ? '尾款付款方式：用車當天付現金' : p === 'transfer' ? '尾款付款方式：提前匯款' : p === 'split' ? '尾款付款方式：尾款匯款，司機禮現場交給司機' : p === 'paid' ? '尾款已付清' : '月結，不用支付尾款'; }
   function setPay(p){ pay = p; Array.prototype.forEach.call(document.querySelectorAll('.opt'), function(b){ b.setAttribute('aria-pressed', b.dataset.pay === p ? 'true' : 'false'); }); }
   /* 2026-10-20 Nicole：車隊那幾行（車序｜車號｜駕駛｜車款｜電話｜緊急聯絡人）改用表格顯示；導航定位長網址改成短連結 */
   function fleetTbl(h){
@@ -218,8 +219,10 @@ a.line{display:flex;align-items:center;justify-content:center;gap:22px;backgroun
     /* 2026-11-19 Nicole：尾款已付清的單，不讓客人選尾款付款方式，直接顯示已付清 */
     if (j.done && !j.mon) $('payBox').innerHTML = '<h2>尾款</h2><div class="warnbox">✓ 尾款已付清，用車當天不需再付款；如有加時，加時費用再交給現場禮車負責人即可。</div>';
     $('amtCash').textContent = '金額 ' + money(j.bal) + '（尾款及司機禮）'; $('amtXfer').textContent = '金額 ' + money(j.bal);
+    /* 2026-11-19 Nicole：多一個選項「尾款匯款，司機禮現場交給司機」，金額分開寫 */
+    if (+j.red > 0 && +j.bal > +j.red){ $('optSplit').hidden = false; $('amtSplit').textContent = '匯款 ' + money(j.bal - j.red) + '（尾款）＋ 現場 ' + money(j.red) + '（司機禮）'; }
     var C = ('conf' in j) ? j.conf : (j.ok && typeof j.ok === 'object' ? j.ok : null);   // 2026-10-19 客人確認紀錄改放 conf（ok 只代表讀取成功）
-    if (C && C.pay === 'transfer' && !(j.fix && j.fix.at > C.at)){ setPay('transfer'); return done('ok'); }
+    if (C && (C.pay === 'transfer' || C.pay === 'split') && !(j.fix && j.fix.at > C.at)){ setPay(C.pay); return done('ok'); }
     if (C){ setPay(C.pay === 'none' || C.pay === 'paid' ? '' : C.pay); $('okChk').checked = true; $('prevOk').hidden = false; $('prevOk').textContent = '你已於 ' + tm(C.at) + ' 確認過（' + payTxt(C.pay, j.bal) + '），如需更改付款方式可以重新送出。'; }
   }
   function done(kind){
@@ -230,6 +233,7 @@ a.line{display:flex;align-items:center;justify-content:center;gap:22px;backgroun
     if (J.mon){ $('dPay').textContent = '尾款・月結'; $('dAmt').textContent = ''; $('dText').textContent = '期待陪你們迎接美好的一天。'; }
     else if (J.done){ $('dPay').textContent = '尾款・已付清'; $('dAmt').textContent = ''; $('dText').textContent = '用車當天不需再付款，期待陪你們迎接美好的一天。'; }
     else if (pay === 'cash'){ $('dPay').textContent = '尾款・現金支付'; $('dAmt').textContent = nt; $('dText').textContent = '尾款與司機禮包可一起準備，當天交給車隊負責人即可，也可由親友轉交。'; }
+    else if (pay === 'split'){ $('dPay').textContent = '尾款匯款・司機禮現場給'; $('dAmt').textContent = '匯款 NT$ ' + Math.round((+J.bal || 0) - (+J.red || 0)).toLocaleString('en-US'); $('dText').textContent = '請於用車前一天完成尾款匯款；司機禮 NT$ ' + Math.round(+J.red || 0).toLocaleString('en-US') + ' 請於用車當天交給司機。因會計無法即時對帳，請勿於用車當天匯款。'; $('dPaid').hidden = false; var bk2 = bankFrom(J.text); if (bk2){ $('dBank').hidden = false; $('dBankTxt').textContent = bk2; } if (J.paid) paidDone(J.paid.at); }
     else { $('dPay').textContent = '尾款・提前匯款'; $('dAmt').textContent = nt; $('dText').textContent = '請於用車前一天完成匯款；因會計無法即時對帳，請勿於用車當天匯款。'; $('dPaid').hidden = false; var bk = bankFrom(J.text); if (bk){ $('dBank').hidden = false; $('dBankTxt').textContent = bk; } if (J.paid) paidDone(J.paid.at); }
   }
   Array.prototype.forEach.call(document.querySelectorAll('.opt'), function(b){ b.onclick = function(){ setPay(b.dataset.pay); $('err').textContent = ''; }; });
@@ -287,8 +291,8 @@ a.line{display:flex;align-items:center;justify-content:center;gap:22px;backgroun
         .replace(/(<\/a>)、(?=<a class="th")/g, '$1');
       var P = j.pay, noPay = Q.get('p') === '0';
       if (P && !noPay && (P.mon || P.bal > 0)){
-        var hw = P.how === 'cash' ? '用車當天付現金（請將尾款及司機禮包成一包，交給現場禮車負責人，可由親友轉交）' : P.how === 'transfer' ? '提前匯款（最晚用車前一天匯款完成，請勿於用車當天匯款）' : '';
-        var st = P.done ? '✓ 尾款已收到，謝謝您' : (P.how === 'transfer' && P.sent ? '已回傳匯款資訊，對帳中' : '');
+        var hw = P.how === 'cash' ? '用車當天付現金（請將尾款及司機禮包成一包，交給現場禮車負責人，可由親友轉交）' : P.how === 'transfer' ? '提前匯款（最晚用車前一天匯款完成，請勿於用車當天匯款）' : P.how === 'split' ? '尾款匯款 ' + money(P.bal - (+P.red || 0)) + '（最晚用車前一天），司機禮 ' + money(+P.red || 0) + ' 用車當天交給司機' : '';
+        var st = P.done ? '✓ 尾款已收到，謝謝您' : ((P.how === 'transfer' || P.how === 'split') && P.sent ? '已回傳匯款資訊，對帳中' : '');
         $('shPay').textContent = ['款項', P.mon ? '月結，不用支付尾款' : '尾款 ' + money(P.bal) + '（含司機禮）', hw ? '付款方式：' + hw : '', st, P.ot || ''].filter(Boolean).join('\n');
         $('shPay').hidden = false; $('shPayWrap').hidden = false; if (!P.mon && !P.done && P.bank){ $('shBankLbl').textContent = P.how === 'cash' ? '如需改用匯款，匯款帳戶如下' : '匯款帳戶'; $('shBankTxt').textContent = P.bank; $('shBank').hidden = false; }
       }
