@@ -169,8 +169,9 @@ a.line{display:flex;align-items:center;justify-content:center;gap:22px;backgroun
       .replace(/(^|[\s：:])(https:\/\/(?!drive\.google|docs\.google)[^\s<、，]+)/g, function(_, p, u){ return p + '<a href="' + u + '" target="_blank" rel="noopener" style="color:#8a6d43;text-decoration:underline">' + u + '</a>'; });
   }
   if (!no || !dk) return bad('連結不完整，請回到司機群組重新點一次派車單連結。');
-  fetch(BOT, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'wedMemo', op: 'drv', no: no, d: dk }) }).then(function(r){ return r.json(); })
-    .then(function(j){ if (!j || !j.ok) throw new Error((j && j.error) || '讀取失敗');
+  /* 2026-11-22 Nicole：婚禮當天派車單偶爾卡住打不開 → 12 秒沒回應自動重試（最多 3 次），成功的內容存在手機，網路慢時先顯示上次的內容 */
+  var CK = 'drvm:' + no + ':' + dk, shown = false;
+  function show(j){
       $('loading').hidden = true; $('main').hidden = false;
       $('head').textContent = '訂單編號：' + j.no + (j.date ? '｜用車日期：' + md(j.date) : '') + (j.couple ? '\n' + j.couple : '');
       var tx = j.text;
@@ -181,7 +182,14 @@ a.line{display:flex;align-items:center;justify-content:center;gap:22px;backgroun
       }
       $('memo').innerHTML = render(tx);
       $('upd').textContent = j.at ? '最後更新：' + tm(j.at) + '（行程有異動時，這個連結的內容會自動更新）' : '';
-    }).catch(function(e){ bad(e.message || '讀取失敗，請稍後再試，或在司機群組告訴負責人。'); });
+    shown = true;
+  }
+  function getJ(n){ var ac = window.AbortController ? new AbortController() : null, to = setTimeout(function(){ if (ac) ac.abort(); }, 12000);
+    return fetch(BOT, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'wedMemo', op: 'drv', no: no, d: dk }), signal: ac ? ac.signal : undefined })
+      .then(function(r){ return r.json(); }).then(function(j){ clearTimeout(to); return j; }, function(e){ clearTimeout(to); if (n > 1) return new Promise(function(r){ setTimeout(r, 1500); }).then(function(){ return getJ(n - 1); }); throw e; }); }
+  try { var c0 = JSON.parse(localStorage.getItem(CK) || 'null'); if (c0 && c0.ok){ show(c0); $('upd').textContent = '網路較慢時先顯示上次載入的內容，最新內容讀取中…'; } } catch (_) {}
+  getJ(3).then(function(j){ if (!j || !j.ok) throw new Error((j && j.error) || '讀取失敗'); show(j); try { localStorage.setItem(CK, JSON.stringify(j)); } catch (_) {} })
+    .catch(function(e){ if (shown){ $('upd').textContent = '網路較慢，目前顯示的是上次載入的內容；請稍後重新整理。'; return; } bad((e && e.name === 'AbortError') ? '網路較慢讀不到派車單，請重新整理一次，或在司機群組告訴負責人。' : (e && e.message) || '讀取失敗，請稍後再試，或在司機群組告訴負責人。'); });
 })();
 </script>
 <script>/* 2026-10-17 中英文、數字與中文之間自動加空格（畫面＋複製的文字）；輸入框、網址不動 */
