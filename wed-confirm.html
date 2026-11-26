@@ -276,7 +276,7 @@ button.go:disabled{opacity:.6}
       b.onclick = function(){ var i = firePick.indexOf(z[0]); if (i >= 0) firePick.splice(i, 1); else firePick.push(z[0]); g.classList.remove('bad'); fireUi(); }; g.appendChild(b); });
     var T = [], hotel = P.filter(function(z){ return firePick.indexOf(z[0]) >= 0 && /飯店|酒店|旅館|會館|行館|渡假|度假|宴會|hotel|resort/i.test(z[2] || ''); });
     if (on && hotel.length) T.push('施放地點是飯店／會館，請依照飯店要求的地點施放。');
-    if (on && /實體/.test(pick.fireType || '')) T.push('鞭炮注意事項：不可以從車上丟出鞭炮，請下車到定點施放，並與人、車保持距離。');
+    if (on && /實體/.test(pick.fireType || '')) T.push('鞭炮注意事項：車上不能丟炮或施放鞭炮。之前同業發生過鞭炮被風吹回車內、在車內炸開導致親友受傷的意外，也有丟炮被開單耽誤流程的情況。請安排親友下車到車外安全的定點施放，並與人、車保持距離，當天司機會配合停車或放慢。');
     $('fireTip').hidden = !T.length; $('fireTip').textContent = T.join('\n');
   }
   ['meet', 'wed', 'restAddr'].forEach(function(id){ $(id).addEventListener('input', fireUi); });
